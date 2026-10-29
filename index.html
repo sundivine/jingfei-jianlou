@@ -1,0 +1,1959 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>京飞捡漏 · 北京出发低价机票 PRD（v0.1 评审稿）</title>
+<style>
+:root{
+  --brand:#1f6fff;
+  --brand-dark:#0b4fc4;
+  --brand-soft:#e8f1ff;
+  --ink:#16203a;
+  --ink-2:#475069;
+  --ink-3:#8a93a8;
+  --line:#e6e9f2;
+  --bg:#f4f6fb;
+  --card:#ffffff;
+  --green:#15a05a;
+  --green-soft:#e6f7ee;
+  --orange:#e08600;
+  --orange-soft:#fff4e0;
+  --red:#d83a3a;
+  --red-soft:#fdeaea;
+  --purple:#7a5af8;
+  --purple-soft:#f0ecff;
+  --radius:14px;
+  --shadow:0 10px 30px rgba(22,32,58,.10);
+  --mono:"SFMono-Regular",ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Segoe UI",sans-serif;
+  color:var(--ink);background:var(--bg);font-size:15px;line-height:1.65;
+}
+button{font-family:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:6px}
+
+/* ============ Top bar ============ */
+.topbar{
+  position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:14px;
+  padding:12px 22px;background:#fff;border-bottom:1px solid var(--line);
+}
+.topbar .logo{display:flex;align-items:center;gap:9px;font-weight:700;font-size:16px;white-space:nowrap}
+.logo-badge{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--brand),#5b9bff);color:#fff;display:grid;place-items:center;font-size:16px}
+.topbar .meta{color:var(--ink-3);font-size:12.5px;line-height:1.4}
+.status-pill{font-size:11px;font-weight:600;color:var(--orange);background:var(--orange-soft);border:1px solid #f2d9a8;border-radius:20px;padding:2px 9px;white-space:nowrap}
+.topbar-spacer{flex:1}
+.mode-switch{display:flex;background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:3px}
+.mode-switch button{border:0;background:transparent;padding:6px 14px;border-radius:8px;font-size:13px;color:var(--ink-2);font-weight:600}
+.mode-switch button.active{background:#fff;color:var(--brand);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+
+/* ============ Workspace split ============ */
+.workspace{display:grid;grid-template-columns:400px 1fr;gap:26px;max-width:1440px;margin:0 auto;padding:26px 22px 60px;align-items:start}
+
+/* Phone */
+.prototype-rail{position:sticky;top:84px}
+.phone{
+  width:390px;height:780px;background:#0e1424;border-radius:42px;padding:11px;
+  box-shadow:var(--shadow);margin:0 auto;
+}
+.phone-screen{
+  position:relative;width:100%;height:100%;background:var(--bg);border-radius:32px;overflow:hidden;
+  display:flex;flex-direction:column;
+}
+.notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:128px;height:26px;background:#0e1424;border-radius:0 0 16px 16px;z-index:30}
+.statusbar{height:42px;flex:0 0 42px;display:flex;align-items:center;justify-content:space-between;padding:0 22px 0 26px;font-size:13px;font-weight:600;color:var(--ink);position:relative;z-index:5}
+.statusbar .sb-right{display:flex;gap:5px;align-items:center;font-size:12px}
+.appbar{flex:0 0 auto;background:linear-gradient(135deg,var(--brand),#4a90ff);color:#fff;padding:6px 16px 14px}
+.appbar .loc{font-size:12px;opacity:.92;display:flex;align-items:center;gap:4px}
+.appbar h2{margin:4px 0 0;font-size:19px;font-weight:700}
+.appbar .sub{font-size:12px;opacity:.9;margin-top:2px}
+
+.screen-body{flex:1 1 auto;overflow-y:auto;overflow-x:hidden;padding:14px 13px 90px;scroll-behavior:smooth}
+.screen-body::-webkit-scrollbar{width:0}
+
+.tabbar{
+  position:absolute;left:0;right:0;bottom:0;height:66px;background:#fff;border-top:1px solid var(--line);
+  display:flex;z-index:20;padding-bottom:6px;
+}
+.tabbar .tb{flex:1;border:0;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:11px;color:var(--ink-3)}
+.tabbar .tb .ic{font-size:19px}
+.tabbar .tb.active{color:var(--brand);font-weight:600}
+
+/* generic phone components */
+.search-box{display:flex;align-items:center;gap:8px;background:#fff;border-radius:12px;padding:10px 12px;font-size:13.5px;color:var(--ink-2);box-shadow:0 2px 10px rgba(22,32,58,.05)}
+.section-h{display:flex;align-items:center;justify-content:space-between;margin:16px 2px 9px}
+.section-h .t{font-size:15px;font-weight:700}
+.section-h .more{font-size:12px;color:var(--brand)}
+.chip-row{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
+.chip-row::-webkit-scrollbar{display:none}
+.chip{flex:0 0 auto;border:1px solid var(--line);background:#fff;border-radius:20px;padding:6px 13px;font-size:12.5px;color:var(--ink-2)}
+.chip.active{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
+
+.holiday-banner{border-radius:var(--radius);padding:13px 14px;color:#fff;background:linear-gradient(120deg,#ff8a3d,#ff5d6b);position:relative;overflow:hidden}
+.holiday-banner .h-tag{font-size:11px;background:rgba(255,255,255,.25);border-radius:6px;padding:2px 7px;display:inline-block}
+.holiday-banner .h-title{font-size:16px;font-weight:700;margin:6px 0 2px}
+.holiday-banner .h-desc{font-size:12px;opacity:.95}
+.holiday-banner .h-leave{margin-top:9px;background:rgba(255,255,255,.18);border-radius:9px;padding:7px 10px;font-size:12px;line-height:1.5}
+.holiday-banner .plane{position:absolute;right:-6px;bottom:-10px;font-size:64px;opacity:.25}
+
+.seg{display:flex;background:#eef1f7;border-radius:11px;padding:3px;margin:2px 0 12px}
+.seg button{flex:1;border:0;background:transparent;border-radius:9px;padding:8px 0;font-size:14px;font-weight:600;color:var(--ink-2)}
+.seg button.active{background:#fff;color:var(--brand);box-shadow:0 1px 5px rgba(0,0,0,.08)}
+
+.route-card{background:#fff;border-radius:var(--radius);padding:12px;margin-bottom:11px;box-shadow:0 2px 10px rgba(22,32,58,.05);position:relative;border:1px solid #f0f2f8}
+.rc-top{display:flex;align-items:center;gap:10px}
+.rc-flag{width:38px;height:38px;flex:0 0 38px;border-radius:10px;display:grid;place-items:center;font-size:21px;background:var(--brand-soft)}
+.rc-city{flex:1;min-width:0}
+.rc-city .name{font-size:15px;font-weight:700}
+.rc-city .en{font-size:11px;color:var(--ink-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rc-price{text-align:right;flex:0 0 auto}
+.rc-price .from{font-size:10px;color:var(--ink-3)}
+.rc-price .val{font-size:19px;font-weight:800;color:var(--red);line-height:1.1}
+.rc-price .val small{font-size:11px;font-weight:600}
+.rc-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.tag{font-size:11px;border-radius:6px;padding:2px 7px;display:inline-flex;align-items:center;gap:3px;font-weight:500}
+.tag.leave{background:var(--orange-soft);color:var(--orange)}
+.tag.green{background:var(--green-soft);color:var(--green)}
+.tag.blue{background:var(--brand-soft);color:var(--brand)}
+.tag.purple{background:var(--purple-soft);color:var(--purple)}
+.tag.gray{background:#f0f2f8;color:var(--ink-2)}
+.tag.red{background:#fdeaea;color:var(--red)}
+.rc-foot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:9px;border-top:1px dashed var(--line);font-size:11.5px;color:var(--ink-2)}
+.rc-foot .dur{display:flex;gap:10px}
+.hot-ribbon{position:absolute;top:0;right:12px;background:var(--red);color:#fff;font-size:10px;padding:2px 8px;border-radius:0 0 6px 6px;font-weight:600}
+
+/* detail */
+.detail-hero{background:linear-gradient(135deg,#2a7dff,#56b0ff);color:#fff;padding:8px 4px 18px;border-radius:0 0 20px 20px;margin:-14px -13px 0}
+.detail-hero .dh-row{display:flex;align-items:center;justify-content:space-between;padding:0 16px}
+.back-btn{border:0;background:rgba(255,255,255,.2);color:#fff;width:32px;height:32px;border-radius:9px;font-size:16px}
+.detail-hero .dh-city{padding:8px 16px 0}
+.detail-hero .dh-city .en{opacity:.9;font-size:12px}
+.detail-hero .dh-city .name{font-size:23px;font-weight:800}
+.detail-hero .dh-price{text-align:right}
+.detail-hero .dh-price .v{font-size:26px;font-weight:800}
+.detail-hero .dh-price .l{font-size:11px;opacity:.9}
+
+.panel{background:#fff;border-radius:var(--radius);padding:13px 14px;margin-top:12px;box-shadow:0 2px 10px rgba(22,32,58,.04)}
+.panel h4{margin:0 0 10px;font-size:14.5px;display:flex;align-items:center;gap:7px}
+.panel h4 .pi{font-size:16px}
+.kv{display:flex;justify-content:space-between;font-size:13px;padding:7px 0;border-bottom:1px solid #f4f6fb}
+.kv:last-child{border-bottom:0}
+.kv .k{color:var(--ink-2)}
+.kv .v{font-weight:600;text-align:right}
+.timeline{position:relative;padding-left:18px}
+.timeline::before{content:"";position:absolute;left:5px;top:6px;bottom:6px;width:2px;background:var(--line)}
+.tl{position:relative;padding:0 0 13px 6px}
+.tl:last-child{padding-bottom:0}
+.tl::before{content:"";position:absolute;left:-17px;top:5px;width:9px;height:9px;border-radius:50%;background:var(--brand);border:2px solid #fff;box-shadow:0 0 0 1px var(--brand)}
+.tl .tl-t{font-size:13px;font-weight:700}
+.tl .tl-d{font-size:12px;color:var(--ink-2)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;text-align:center;font-size:11.5px}
+.cal-grid .dow{color:var(--ink-3);font-weight:600;padding:2px 0}
+.cal-cell{aspect-ratio:1;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.15;border:1px solid transparent}
+.cal-cell.muted{color:#c6ccda}
+.cal-cell.work{color:var(--ink)}
+.cal-cell.holiday{background:var(--red);color:#fff;font-weight:700}
+.cal-cell.weekend{background:#fdeaea;color:var(--red)}
+.cal-cell.needleave{background:var(--orange-soft);color:var(--orange);border:1px dashed var(--orange);font-weight:600}
+.cal-cell .cn{font-size:9.5px;margin-top:1px}
+.cal-legend{display:flex;flex-wrap:wrap;gap:11px;margin-top:10px;font-size:11px;color:var(--ink-2)}
+.cal-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+/* ===== Price Calendar (F-01 价格趋势) ===== */
+.cal-summary{display:flex;gap:8px;margin:0 16px 12px}
+.cal-summary .cs-item{flex:1;background:#f7f8fc;border-radius:11px;padding:10px 8px;text-align:center}
+.cal-summary .cs-k{font-size:11px;color:var(--ink-3)}
+.cal-summary .cs-v{font-size:18px;font-weight:800;margin-top:2px;color:var(--ink)}
+.cal-summary .cs-sub{font-size:10.5px;color:var(--ink-3);margin-top:1px}
+.cal-month{font-size:15px;font-weight:800;margin:12px 16px 8px}
+.cal-grid .cal-dow{color:var(--ink-3);font-weight:700;padding:4px 0;font-size:11.5px}
+.cal-pcell{aspect-ratio:1;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1;position:relative;border:1.5px solid transparent}
+.cal-pcell.empty{background:transparent}
+.cal-pcell.nodata{background:#f2f4f9;color:#c2c7d3}
+.cal-pcell.ismin{border-color:var(--green);box-shadow:0 0 0 2px var(--green-soft);font-weight:800}
+.cal-pcell .cp-d{font-size:12px;font-weight:700}
+.cal-pcell .cp-p{font-size:10.5px;font-weight:700;margin-top:1px}
+.cal-pcell .cp-badge{position:absolute;top:-5px;right:-4px;background:var(--green);color:#fff;font-size:9px;font-weight:800;padding:1px 4px;border-radius:6px;line-height:1.2}
+.cal-legend .lg-dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px;vertical-align:-1px}
+.cal-link{font-size:11.5px;color:var(--brand);font-weight:700;white-space:nowrap;cursor:pointer}
+
+.visa-status{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:11px;font-size:13px;font-weight:600}
+.visa-status.ok{background:var(--green-soft);color:var(--green)}
+.visa-status.eta{background:var(--brand-soft);color:var(--brand)}
+.visa-stamp{width:34px;height:34px;border-radius:9px;display:grid;place-items:center;background:#fff;font-size:18px;flex:0 0 34px}
+.doc-list{margin:6px 0 0;padding:0;list-style:none}
+.doc-list li{font-size:12.5px;padding:6px 0 6px 22px;position:relative;border-bottom:1px solid #f4f6fb}
+.doc-list li:last-child{border-bottom:0}
+.doc-list li::before{content:"✓";position:absolute;left:2px;color:var(--green);font-weight:700}
+.doc-note{font-size:11.5px;color:var(--ink-3);margin-top:9px;background:#f7f8fc;border-radius:8px;padding:8px 10px}
+.btn{border:0;border-radius:12px;padding:13px;font-size:15px;font-weight:700;width:100%}
+.btn-primary{background:var(--brand);color:#fff}
+.btn-ghost{background:#fff;border:1px solid var(--line);color:var(--ink)}
+.cta-bar{position:absolute;left:0;right:0;bottom:66px;background:#fff;border-top:1px solid var(--line);padding:10px 14px;display:flex;gap:10px;z-index:19}
+.cta-bar .price-col{flex:0 0 auto;align-self:center}
+.cta-bar .price-col .v{font-size:21px;font-weight:800;color:var(--red)}
+.cta-bar .price-col .l{font-size:10.5px;color:var(--ink-3)}
+.cta-bar .go{flex:1}
+
+/* sheet/modal */
+.sheet-mask{position:absolute;inset:0;background:rgba(15,20,36,.45);z-index:40;display:none;align-items:flex-end;border-radius:32px}
+.sheet-mask.show{display:flex}
+.sheet{background:#fff;width:100%;border-radius:20px 20px 0 0;padding:18px 16px calc(16px + env(safe-area-inset-bottom));max-height:82%;overflow-y:auto;animation:up .25s ease}
+@keyframes up{from{transform:translateY(30px);opacity:.4}to{transform:translateY(0);opacity:1}}
+.sheet .grab{width:40px;height:4px;background:var(--line);border-radius:4px;margin:0 auto 12px}
+.sheet h3{margin:0 0 4px;font-size:17px}
+.sheet .sh-sub{font-size:12px;color:var(--ink-3);margin:0 0 14px}
+.opt{display:flex;align-items:center;gap:11px;border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin-bottom:9px}
+.opt .oi{width:30px;height:30px;border-radius:8px;background:var(--brand-soft);display:grid;place-items:center;font-size:16px;flex:0 0 30px}
+.opt .ot{flex:1}
+.opt .ot .n{font-size:13.5px;font-weight:600}
+.opt .ot .d{font-size:11px;color:var(--ink-3)}
+.opt .ck{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);flex:0 0 20px}
+.opt.sel{border-color:var(--brand);background:var(--brand-soft)}
+.opt.sel .ck{border-color:var(--brand);background:var(--brand);box-shadow:inset 0 0 0 4px #fff}
+
+.toast{position:absolute;left:50%;bottom:120px;transform:translateX(-50%) translateY(20px);background:rgba(20,26,44,.92);color:#fff;font-size:12.5px;padding:9px 16px;border-radius:10px;z-index:60;opacity:0;pointer-events:none;transition:.25s;white-space:nowrap;max-width:86%;text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* state screens */
+.state{text-align:center;padding:60px 24px}
+.state .si{font-size:52px;margin-bottom:12px}
+.state h3{font-size:16px;margin:0 0 6px}
+.state p{font-size:12.5px;color:var(--ink-3);margin:0 0 18px}
+.skull{position:relative}
+
+/* ===== map mode ===== */
+.view-toggle{display:inline-flex;background:#eef1f7;border-radius:9px;padding:2px}
+.view-toggle button{border:0;background:transparent;font-size:12px;font-weight:600;color:var(--ink-2);padding:5px 12px;border-radius:7px}
+.view-toggle button.active{background:#fff;color:var(--brand);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+.map-controls{background:#fff;border-radius:var(--radius);padding:11px 12px;margin-bottom:10px;box-shadow:0 2px 10px rgba(22,32,58,.04)}
+.map-controls .seg{margin:0 0 9px}
+.map-controls .leave-mini{display:flex;gap:6px;overflow-x:auto}
+.map-controls .leave-mini::-webkit-scrollbar{display:none}
+.map-controls .leave-mini .chip{padding:4px 10px;font-size:11.5px}
+.map-wrap{position:relative;border-radius:var(--radius);overflow:hidden;border:1px solid #dfe6f5;background:linear-gradient(180deg,#eaf3ff,#f7fbff);box-shadow:0 2px 10px rgba(22,32,58,.06)}
+.map-svg{display:block;width:100%;height:auto}
+.land{fill:#d8e6d2;stroke:#c2d4b8;stroke-width:1.2}
+.land.island{fill:#d8e6d2}
+.gridline{stroke:#cfe0f5;stroke-width:.6;stroke-dasharray:2 3;fill:none}
+.ring{fill:none;stroke:#7aa5e8;stroke-width:1;stroke-dasharray:4 4;opacity:.6}
+.ring-label{font-size:8.5px;fill:#5b83c4;font-family:var(--mono)}
+.origin-dot{fill:var(--red);stroke:#fff;stroke-width:2}
+.origin-label{font-size:9.5px;font-weight:700;fill:var(--red)}
+.route-pin{cursor:pointer}
+.route-pin .halo{fill:#fff;opacity:.0;transition:.15s}
+.route-pin:hover .halo,.route-pin.sel .halo{opacity:.9}
+.route-pin.sel .core{stroke:var(--ink);stroke-width:1.6}
+.pin-label{font-size:8.5px;font-weight:700;fill:#fff;text-anchor:middle;pointer-events:none}
+.pin-city{font-size:8.5px;fill:var(--ink-2);text-anchor:middle;pointer-events:none;font-weight:600}
+.pin-city.dim{fill:#aab2c2}
+.map-legend{position:absolute;left:9px;bottom:22px;background:rgba(255,255,255,.92);border-radius:9px;padding:7px 9px;font-size:10px;color:var(--ink-2);box-shadow:0 2px 8px rgba(22,32,58,.08);line-height:1.7;max-width:132px}
+.map-legend b{font-size:10.5px}
+.map-legend .lg-dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:4px;vertical-align:-1px}
+.map-disclaimer{position:absolute;right:8px;bottom:6px;font-size:8.5px;color:#8fa3c4;background:rgba(255,255,255,.75);padding:2px 6px;border-radius:6px}
+#mapCard{position:absolute;left:8px;right:8px;bottom:8px;z-index:6}
+.map-minicard{background:#fff;border-radius:var(--radius);padding:10px 12px;box-shadow:0 8px 24px rgba(22,32,58,.2);border:1px solid #e6ebf4;animation:mmc-in .18s ease-out}
+@keyframes mmc-in{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.map-minicard .mmc-top{display:flex;align-items:center;gap:9px}
+.map-minicard .mmc-go{margin-top:9px}
+.map-emptyhint{font-size:11.5px;color:var(--ink-3);text-align:center;padding:12px 6px 2px}
+
+/* ===== visa directory (F-10) ===== */
+.visa-entry{background:#fff;border-radius:var(--radius);padding:12px 13px;box-shadow:0 2px 10px rgba(22,32,58,.05);border:1px solid #eef1f7;cursor:pointer;transition:box-shadow .2s}
+.visa-entry:active{box-shadow:0 1px 4px rgba(22,32,58,.12)}
+.visa-entry .ve-head{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:10px}
+.visa-entry .ve-head b{font-size:13.5px}
+.visa-entry .ve-head span{font-size:11px;color:var(--ink-3)}
+.visa-entry .ve-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.visa-entry .ve-cell{background:#f5f8ff;border-radius:10px;padding:8px 2px 7px;text-align:center}
+.visa-entry .ve-name{font-size:10.5px;color:var(--ink-2);font-weight:600;white-space:nowrap}
+.visa-entry .ve-num{font-size:17px;font-weight:800;color:var(--ink);line-height:1.25;margin-top:3px}
+.visa-entry .ve-num small{font-size:9.5px;font-weight:500;color:var(--ink-3)}
+.visa-entry .ve-note{font-size:10.5px;color:var(--ink-3);margin-top:9px}
+.visa-scope{font-size:11.5px;color:var(--ink-2);background:#f3f6fc;border-radius:10px;padding:9px 11px;line-height:1.6;margin-bottom:10px}
+.visa-group{margin:2px 0 15px}
+.visa-group-h{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700;margin:2px 2px 8px}
+.visa-group-h .vgh-dot{width:9px;height:9px;border-radius:50%;flex:none}
+.visa-group-h .vgh-count{font-size:11px;color:var(--ink-3);font-weight:500}
+.visa-group-h .vgh-def{font-weight:500;font-size:10.5px;color:var(--ink-3);margin-left:auto;text-align:right;line-height:1.4;max-width:168px}
+.visa-row{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #eef1f7;border-radius:var(--radius);padding:10px 12px;margin-bottom:8px;box-shadow:0 2px 8px rgba(22,32,58,.04);cursor:pointer;transition:box-shadow .2s}
+.visa-row:active{box-shadow:0 1px 4px rgba(22,32,58,.12)}
+.visa-row .vr-main{flex:1;min-width:0}
+.visa-row .vr-city{font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.visa-row .vr-city .en{font-size:10.5px;color:var(--ink-3);font-weight:400;margin-left:3px}
+.visa-row .vr-sub{font-size:11px;color:var(--ink-3);margin-top:2px;line-height:1.4}
+.visa-row .vr-right{text-align:right;display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex:none}
+.visa-row .vr-price{font-size:16px;font-weight:800;color:var(--ink)}
+.visa-row .vr-price small{font-size:11px;font-weight:600}
+.visa-row .vr-price.dead{font-size:12px;color:var(--ink-3);font-weight:600;margin-top:2px}
+.visa-row .vr-chev{color:#c2c9d6;font-size:20px;font-weight:600;flex:none}
+
+/* linked hotspot */
+[data-link]{cursor:pointer;transition:box-shadow .2s, box-shadow .2s}
+.hot-ring{box-shadow:0 0 0 2px var(--brand),0 0 0 5px rgba(31,111,255,.18)!important;border-radius:var(--radius)}
+.feature-flash{animation:flash 1.6s ease}
+@keyframes flash{0%{background:#fff8dd}30%{background:#fff8dd}100%{background:transparent}}
+
+.rail-hint{text-align:center;font-size:11.5px;color:var(--ink-3);margin-top:12px;line-height:1.5}
+.rail-hint b{color:var(--brand)}
+
+/* ============ Doc panel ============ */
+.doc{background:transparent;min-height:700px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);position:sticky;top:61px;background:var(--bg);z-index:30;padding-top:4px}
+.tabs button{border:0;background:transparent;padding:11px 16px;font-size:14.5px;font-weight:600;color:var(--ink-2);border-bottom:2.5px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tabs button.active{color:var(--brand);border-bottom-color:var(--brand)}
+.tab-panel{display:none;padding:22px 4px 40px;animation:fade .3s}
+.tab-panel.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+
+.doc h1{font-size:26px;margin:6px 0 4px}
+.doc .lead{color:var(--ink-2);font-size:15px;margin:0 0 20px}
+.doc h2{font-size:19px;margin:28px 0 10px;padding-bottom:7px;border-bottom:2px solid var(--brand);display:inline-block}
+.doc h3{font-size:16.5px;margin:20px 0 8px}
+.doc p{margin:8px 0}
+.doc ul,.doc ol{margin:8px 0;padding-left:22px}
+.doc li{margin:5px 0}
+.doc .muted{color:var(--ink-3)}
+.pill-tag{display:inline-block;font-size:11px;font-weight:700;border-radius:5px;padding:1px 7px;margin-right:6px;vertical-align:1px}
+.pill-tag.p0{background:#fdeaea;color:var(--red)}
+.pill-tag.p1{background:var(--orange-soft);color:var(--orange)}
+.pill-tag.p2{background:#f0f2f8;color:var(--ink-3)}
+.fid{font-family:var(--mono);font-size:11.5px;color:var(--brand);background:var(--brand-soft);border-radius:5px;padding:1px 7px;font-weight:600}
+
+.card-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:14px 0}
+.info-card{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 15px}
+.info-card .ic-t{font-weight:700;font-size:13.5px;margin-bottom:5px;display:flex;align-items:center;gap:7px}
+.info-card .ic-b{font-size:12.5px;color:var(--ink-2)}
+
+.feature-section{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 20px;margin:16px 0;scroll-margin-top:120px;transition:box-shadow .2s,border-color .2s}
+.feature-section.linked{border-color:var(--brand);box-shadow:0 0 0 3px rgba(31,111,255,.12)}
+.feature-section .fs-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+.feature-section h3{margin:0;font-size:16.5px}
+.feature-section .rule{font-size:14px}
+.feature-section .lbl{font-size:11.5px;font-weight:700;color:var(--ink-3);text-transform:uppercase;letter-spacing:.4px;margin:14px 0 4px}
+
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;margin:10px 0}
+table{border-collapse:collapse;width:100%;font-size:13px;min-width:480px}
+th,td{border-bottom:1px solid var(--line);padding:9px 11px;text-align:left;vertical-align:top}
+th{background:#f7f9fd;font-weight:700;font-size:12.5px;white-space:nowrap}
+tr:last-child td{border-bottom:0}
+code{font-family:var(--mono);background:#f0f2f8;border-radius:5px;padding:1px 6px;font-size:12.5px;color:var(--brand-dark)}
+.formula{background:#0f1730;color:#dbe6ff;border-radius:10px;padding:13px 15px;font-family:var(--mono);font-size:12.5px;line-height:1.8;overflow-x:auto;margin:10px 0;white-space:pre}
+.callout{border-radius:11px;padding:12px 14px;font-size:13px;margin:12px 0;border:1px solid}
+.callout.warn{background:var(--orange-soft);border-color:#f0d6a0;color:#8a5a00}
+.callout.info{background:var(--brand-soft);border-color:#bcd4ff;color:#13508f}
+.callout.tbd{background:#f6f1ff;border-color:#d9ccff;color:#5b3fc0}
+.assume{color:var(--purple);font-weight:600}
+
+.journey{display:flex;flex-wrap:wrap;gap:0;align-items:stretch;margin:14px 0}
+.jstep{flex:1;min-width:130px;background:#fff;border:1px solid var(--line);border-radius:11px;padding:11px 12px;position:relative;margin-right:22px}
+.jstep:last-child{margin-right:0}
+.jstep::after{content:"→";position:absolute;right:-19px;top:50%;transform:translateY(-50%);color:var(--brand);font-weight:700;font-size:16px;z-index:2}
+.jstep:last-child::after{display:none}
+.jstep .jn{font-size:11px;color:var(--brand);font-weight:700}
+.jstep .jt{font-size:13px;font-weight:700;margin:3px 0}
+.jstep .jd{font-size:11.5px;color:var(--ink-2)}
+
+/* ============ Text mode ============ */
+body.textmode .topbar .mode-switch button[data-mode="split"]{display:none}
+body.textmode .workspace{display:block;max-width:920px}
+body.textmode .prototype-rail{position:static;display:none}
+body.textmode .doc{min-height:0}
+body.textmode .tabs{position:static;display:none}
+body.textmode .tab-panel{display:block!important;padding:10px 0;animation:none}
+body.textmode .tab-panel.text-hide{display:none!important}
+.text-proto{border:1px solid var(--line);border-radius:14px;padding:16px;margin:14px 0;background:#fafbfe}
+.text-proto .tp-label{font-size:12px;font-weight:700;color:var(--brand);margin-bottom:10px}
+.text-proto .mini-phone{width:340px;max-width:100%;height:640px;margin:0 auto;border-radius:28px}
+.text-proto .mini-phone .tabbar{height:60px}
+body.textmode .prototype-rail.show-inline{display:block;position:static;margin-bottom:22px}
+body.textmode .prototype-rail.show-inline .phone{width:360px;height:720px}
+.text-toc{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 18px;margin:18px 0;font-size:13.5px}
+.text-toc a{color:var(--brand);text-decoration:none;margin-right:16px;white-space:nowrap;line-height:2}
+.text-only-head{display:none}
+body.textmode .text-only-head{display:block;margin-bottom:8px}
+
+/* ============ Responsive ============ */
+@media (max-width:1080px){
+  .workspace{grid-template-columns:1fr;gap:18px}
+  .prototype-rail{position:static;display:flex;flex-direction:column;align-items:center}
+  .phone{width:380px}
+  .card-grid{grid-template-columns:1fr}
+}
+@media (max-width:480px){
+  .topbar{padding:10px 12px;gap:8px;flex-wrap:wrap}
+  .topbar .meta{display:none}
+  .workspace{padding:14px 10px 40px}
+  .phone{width:100%;max-width:390px;height:740px}
+  .jstep{min-width:100%;margin-right:0;margin-bottom:18px}
+  .jstep::after{content:"↓";right:50%;top:auto;bottom:-16px;transform:translateX(50%)}
+}
+/* ============ Mobile / real phone (≤768px) ============ */
+@media (max-width:768px){
+  html,body{height:100%}
+  body{-webkit-text-size-adjust:100%;background:var(--bg);overscroll-behavior-y:none}
+  /* 隐藏桌面评审框架：顶栏 + 右侧 PRD 文档，只保留 App 本体 */
+  .topbar{display:none}
+  .doc{display:none}
+  .workspace{display:block;max-width:none;margin:0;padding:0}
+  .prototype-rail{position:static}
+  .rail-hint{display:none}
+  /* App 全屏化：去掉手机外壳边框/圆角/阴影 */
+  .phone{
+    width:100%;height:100vh;height:100dvh;max-width:none;border-radius:0;padding:0;
+    background:var(--bg);box-shadow:none;
+  }
+  .phone-screen{border-radius:0}
+  .notch{display:none}
+  .statusbar{display:none}  /* 真机由系统状态栏/浏览器栏提供 */
+  .appbar{padding-top:calc(10px + env(safe-area-inset-top))}
+  .screen-body{
+    -webkit-overflow-scrolling:touch;
+    padding-left:14px;padding-right:14px;
+    padding-bottom:calc(86px + env(safe-area-inset-bottom));
+  }
+  /* 底部 Tab / 悬浮 CTA / 弹层均避让 Home Indicator */
+  .tabbar{height:auto;min-height:60px;padding-bottom:env(safe-area-inset-bottom)}
+  .tabbar .tb{padding-top:6px}
+  .cta-bar{bottom:calc(60px + env(safe-area-inset-bottom))}
+  .sheet-mask{border-radius:0}
+  .toast{bottom:calc(128px + env(safe-area-inset-bottom))}
+  /* 触控热区：返回按钮 / 分段控件 / 胶囊 ≥40px */
+  .back-btn{width:38px;height:38px}
+  .seg button{min-height:40px}
+  .chip{padding:8px 14px}
+  .view-toggle button{padding:8px 14px}
+  .map-legend{max-width:150px}
+  .detail-hero{margin-left:-14px;margin-right:-14px}
+  #detailBody,#calendarBody{padding-bottom:calc(170px + env(safe-area-inset-bottom))!important}
+}
+@media print{
+  .topbar,.tabbar,.cta-bar,.tabs,.rail-hint,.mode-switch{display:none!important}
+  body{background:#fff}
+  .workspace{display:block;max-width:100%;padding:0}
+  .prototype-rail{display:none}
+  .tab-panel{display:block!important;padding:0}
+  .feature-section,.info-card{break-inside:avoid;border-color:#ccc}
+  body.textmode .prototype-rail.show-inline{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= TOP BAR ================= -->
+<header class="topbar">
+  <div class="logo"><span class="logo-badge">✈</span> 京飞捡漏</div>
+  <div class="meta">北京出发低价机票 · 交互原型 + 产品需求文档<br><span class="status-pill">v0.1 评审稿 · 2026-10-28</span></div>
+  <div class="topbar-spacer"></div>
+  <div class="mode-switch" role="tablist" aria-label="视图模式">
+    <button data-mode="split" class="active" onclick="setMode('split')">双栏评审</button>
+    <button data-mode="text" onclick="setMode('text')">文档模式</button>
+  </div>
+</header>
+
+<main class="workspace">
+
+  <!-- ================= LEFT: PHONE PROTOTYPE ================= -->
+  <div class="prototype-rail" id="protoRail">
+    <div class="phone">
+      <div class="phone-screen">
+        <div class="notch"></div>
+        <div class="statusbar"><span id="sbClock">9:41</span><span class="sb-right">📶 5G 🔋</span></div>
+
+        <!-- ===== SCREEN: HOME ===== -->
+        <div class="screen" data-screen="home" style="display:flex;flex-direction:column;flex:1;min-height:0">
+          <div class="appbar">
+            <div class="loc">📍 出发地 · 北京（PEK / PKX）</div>
+            <h2>去哪儿玩，先看哪天最便宜</h2>
+            <div class="sub">低价票 × 法定节假日拼假 × 境外证件提醒</div>
+          </div>
+          <div class="screen-body">
+            <div class="search-box" data-link="feature-search" role="button" tabindex="0" onclick="openSheet('sheetSearch')">🔍 搜索目的地 / 国家，或说「我能请 3 天假」</div>
+
+            <!-- Holiday module -->
+            <div class="section-h"><span class="t">🎉 假期捡漏</span><button class="more" data-link="feature-holiday" onclick="go('holiday')">拼假日历 ›</button></div>
+            <div class="holiday-banner" data-link="feature-holiday" role="button" tabindex="0" onclick="go('holiday')">
+              <span class="h-tag">法定节假日</span>
+              <div class="h-title">2027 元旦 · 拼假方案</div>
+              <div class="h-desc">法定 1/1–1/3 放假，紧邻周末</div>
+              <div class="h-leave">💡 <b>请 12/28–12/31 共 4 天年假</b>，可连休 <b>12/28–1/3 共 7 天</b>，足够一趟东南亚/日本短途</div>
+              <span class="plane">✈</span>
+            </div>
+
+            <!-- Visa directory module -->
+            <div class="section-h" style="margin-top:18px">
+              <span class="t">🛂 签证类型速查</span>
+              <button class="more" data-link="feature-visa" onclick="openVisa()">全部政策 ›</button>
+            </div>
+            <div class="visa-entry" data-link="feature-visa" role="button" tabindex="0" onclick="openVisa()">
+              <div class="ve-head"><b>持白本 / 不想提前办签，能去哪？</b><span>按入境门槛分类</span></div>
+              <div class="ve-grid" id="visaEntryGrid"></div>
+              <div class="ve-note">默认口径：中国普通护照 · 北京出境 · 短期旅游；点按卡片查看各类型目的地</div>
+            </div>
+
+            <!-- Board tabs -->
+            <div class="section-h" style="margin-top:18px">
+              <span class="t">📅 低价日历 · 哪天飞最便宜</span>
+              <div class="view-toggle" data-link="feature-map" role="tablist" aria-label="榜单视图">
+                <button id="viewList" class="active" onclick="openList()">☰ 列表</button>
+                <button id="viewMap" onclick="openMap()">🗺️ 地图</button>
+              </div>
+            </div>
+            <div class="seg" role="tablist">
+              <button id="boardDom" class="active" data-link="feature-board" onclick="switchBoard('dom')">🇨🇳 国内</button>
+              <button id="boardIntl" data-link="feature-board" onclick="switchBoard('intl')">🌏 境外</button>
+            </div>
+            <div id="routeList"></div>
+          </div>
+        </div>
+
+        <!-- ===== SCREEN: HOLIDAY ===== -->
+        <div class="screen" data-screen="holiday" style="display:none;flex-direction:column;flex:1;min-height:0">
+          <div class="appbar" style="padding-bottom:10px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <button class="back-btn" onclick="go('home')" aria-label="返回">‹</button>
+              <b style="font-size:16px">拼假日历</b>
+            </div>
+          </div>
+          <div class="screen-body" id="holidayBody">
+            <div class="chip-row" id="holidayChips" style="margin-bottom:6px"></div>
+            <div class="panel">
+              <h4><span class="pi">📅</span><span id="calTitle">2027 年 1 月</span></h4>
+              <div class="cal-grid" id="calGrid"></div>
+              <div class="cal-legend">
+                <span><i style="background:var(--red)"></i>法定放假</span>
+                <span><i style="background:#fdeaea"></i>周末</span>
+                <span><i style="background:var(--orange-soft);border:1px dashed var(--orange)"></i>建议请年假</span>
+              </div>
+            </div>
+            <div class="panel" data-link="feature-holiday">
+              <h4><span class="pi">💡</span>最优拼假方案</h4>
+              <div id="planBox"></div>
+            </div>
+            <div class="section-h"><span class="t">这个假期能去哪儿</span></div>
+            <div id="holidayRoutes"></div>
+          </div>
+        </div>
+
+        <!-- ===== SCREEN: DETAIL ===== -->
+        <div class="screen" data-screen="detail" style="display:none;flex-direction:column;flex:1;min-height:0;position:relative">
+          <div class="screen-body" id="detailBody" style="padding-bottom:150px"></div>
+          <div class="cta-bar" id="ctaBar">
+            <div class="price-col"><div class="v" id="ctaPrice">¥—</div><div class="l">趋势参考最低价 · 实时价以 OTA 为准</div></div>
+            <button class="btn btn-primary go" data-link="feature-redirect" onclick="openSheet('sheetRedirect')">去订票 ›</button>
+          </div>
+        </div>
+
+        <!-- ===== SCREEN: PRICE CALENDAR ===== -->
+        <div class="screen" data-screen="calendar" style="display:none;flex-direction:column;flex:1;min-height:0">
+          <div class="appbar" style="padding-bottom:10px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <button class="back-btn" onclick="go('detail')" aria-label="返回">‹</button>
+              <b style="font-size:16px" id="calRouteName">价格日历</b>
+            </div>
+          </div>
+          <div class="screen-body" id="calendarBody" style="padding-bottom:150px"></div>
+          <div class="cta-bar" id="calCtaBar">
+            <div class="price-col"><div class="v" id="calCtaPrice">¥—</div><div class="l">趋势参考最低价 · 实时价以 OTA 为准</div></div>
+            <button class="btn btn-primary go" data-link="feature-redirect" onclick="openSheet('sheetRedirect')">查看实时价 ›</button>
+          </div>
+        </div>
+
+        <!-- ===== SCREEN: FILTER RESULT / EMPTY ===== -->
+        <div class="screen" data-screen="result" style="display:none;flex-direction:column;flex:1;min-height:0">
+          <div class="appbar" style="padding-bottom:10px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <button class="back-btn" onclick="go('home')" aria-label="返回">‹</button>
+              <b style="font-size:15px" id="resultTitle">筛选结果</b>
+            </div>
+          </div>
+          <div class="screen-body" id="resultBody"></div>
+        </div>
+
+        <!-- ===== SCREEN: MAP ===== -->
+        <div class="screen" data-screen="map" style="display:none;flex-direction:column;flex:1;min-height:0">
+          <div class="appbar" style="padding-bottom:10px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <button class="back-btn" onclick="openList()" aria-label="返回列表">‹</button>
+              <b style="font-size:16px">🗺️ 低价地图 · <span id="mapBoardName">国内</span></b>
+            </div>
+          </div>
+          <div class="screen-body">
+            <div class="map-controls" data-link="feature-map">
+              <div class="seg" id="mapBoardSeg" role="tablist">
+                <button class="active" onclick="setMapBoard('dom',this)">🇨🇳 国内 · 中国视野</button>
+                <button onclick="setMapBoard('intl',this)">🌏 境外 · 世界视野</button>
+              </div>
+              <div class="seg" id="mapLayerSeg" role="tablist">
+                <button class="active" onclick="setMapLayer('price',this)">💰 价格热力</button>
+                <button onclick="setMapLayer('visa',this)">🛂 签证门槛</button>
+                <button onclick="setMapLayer('leave',this)">📅 拼假可行</button>
+              </div>
+              <div class="leave-mini" id="mapLeaveChips" style="display:none"></div>
+            </div>
+            <div class="map-wrap" data-link="feature-map">
+              <svg class="map-svg" id="mapSvg" viewBox="0 0 360 460" preserveAspectRatio="xMidYMid meet" role="img" aria-label="低价目的地示意图"></svg>
+              <div class="map-legend" id="mapLegend"></div>
+              <div class="map-disclaimer" id="mapDisclaimer">示意图 · 非真实比例/测绘图</div>
+              <div id="mapCard"></div>
+            </div>
+            <div class="map-emptyhint" id="mapHint"></div>
+          </div>
+        </div>
+
+        <!-- ===== SCREEN: VISA DIRECTORY ===== -->
+        <div class="screen" data-screen="visa" style="display:none;flex-direction:column;flex:1;min-height:0">
+          <div class="appbar" style="padding-bottom:10px">
+            <div style="display:flex;align-items:center;gap:10px">
+              <button class="back-btn" onclick="go('home')" aria-label="返回">‹</button>
+              <b style="font-size:16px">🛂 签证类型指南</b>
+            </div>
+          </div>
+          <div class="screen-body">
+            <div class="visa-scope" data-link="feature-visa">默认口径：持<b>中国普通护照</b> / 北京口岸出境 / <b>短期旅游</b>；其他护照身份、长居、公务出行不适用。政策核验至 <b>2026-10</b>，出行前以官方 / 使领馆信息为准。</div>
+            <div class="chip-row" id="visaChips" data-link="feature-visa" style="margin-bottom:12px"></div>
+            <div id="visaList"></div>
+            <div class="callout info" style="margin-top:4px">📌 国内目的地持身份证即可前往，不在本指南范围。本页类型口径与首页证件标签、地图「签证门槛」图层、F-04 证件面板一致，仅做分组导航，不单独判定政策。</div>
+            <div class="callout warn" style="margin-top:10px">⚠️ 证件政策可能临时调整，本产品仅聚合信息，<b>不代办、不承诺过签</b>；超过核验周期的政策降级为「请查询官方渠道」，不展示具体免签 / 落地签承诺。</div>
+          </div>
+        </div>
+
+        <!-- ===== bottom tabbar ===== -->
+        <nav class="tabbar">
+          <button class="tb active" id="tbHome" onclick="go('home')"><span class="ic">🏠</span>首页</button>
+          <button class="tb" onclick="openSheet('sheetSearch')"><span class="ic">🔍</span>发现</button>
+          <button class="tb" id="tbHoliday" onclick="go('holiday')"><span class="ic">🗓️</span>假期</button>
+          <button class="tb" onclick="showToast('收藏夹为 P1 功能，v0.1 原型暂未开放')"><span class="ic">⭐</span>收藏</button>
+          <button class="tb" onclick="showToast('我的页面为 P2，当前版本不包含登录体系')"><span class="ic">👤</span>我的</button>
+        </nav>
+
+        <!-- ===== bottom sheets ===== -->
+        <div class="sheet-mask" id="sheetSearch">
+          <div class="sheet" role="dialog" aria-label="搜索与筛选">
+            <div class="grab"></div>
+            <h3>发现你的低价目的地</h3>
+            <p class="sh-sub">支持目的地搜索，或按「能请几天假」反推可行行程</p>
+            <div class="search-box" style="border:1px solid var(--line);margin-bottom:12px">🔍 输入城市 / 国家，如「大阪」「泰国」</div>
+            <div class="lbl" style="font-size:12px;font-weight:700;color:var(--ink-3);margin-bottom:8px" data-link="feature-search">我最多能请的年假天数</div>
+            <div class="chip-row" id="leaveChips" style="margin-bottom:14px">
+              <button class="chip" onclick="pickLeave(this,0)">0 天（纯周末/假期）</button>
+              <button class="chip active" onclick="pickLeave(this,2)">1–2 天</button>
+              <button class="chip" onclick="pickLeave(this,4)">3–4 天</button>
+              <button class="chip" onclick="pickLeave(this,99)">5 天以上</button>
+            </div>
+            <div class="lbl" style="font-size:12px;font-weight:700;color:var(--ink-3);margin-bottom:8px" data-link="feature-filter">出行板块</div>
+            <div class="seg" id="boardFilterSeg" style="margin-bottom:14px">
+              <button class="active" onclick="setFilterBoard('all',this)">不限</button><button onclick="setFilterBoard('dom',this)">国内</button><button onclick="setFilterBoard('intl',this)">境外</button>
+            </div>
+            <button class="btn btn-primary" onclick="applySearch()">查看匹配的低价线路</button>
+          </div>
+        </div>
+
+        <div class="sheet-mask" id="sheetRedirect">
+          <div class="sheet" role="dialog" aria-label="选择订票渠道">
+            <div class="grab"></div>
+            <h3>前往可信渠道完成预订</h3>
+            <p class="sh-sub">京飞捡漏不收款、不出票。价格以下单页实时报价为准。</p>
+            <div id="channelList"></div>
+            <div class="callout warn" style="margin:6px 0 14px">⚠️ 出境请确保证件/签证在有效期内，票价与行李退改规则以渠道页为准。</div>
+            <button class="btn btn-ghost" onclick="closeSheet('sheetRedirect')">再想想</button>
+          </div>
+        </div>
+
+        <div class="toast" id="toast"></div>
+      </div>
+    </div>
+    <div class="rail-hint">点击原型中 <b>带蓝色高亮的区域</b>，右侧会联动定位到对应需求；<br>原型为可点击流程，可真实切换板块、假期与详情。</div>
+  </div>
+
+  <!-- ================= RIGHT: PRD DOC ================= -->
+  <section class="doc">
+    <nav class="tabs" role="tablist">
+      <button class="active" data-tab="overview" onclick="switchTab('overview')">概览</button>
+      <button data-tab="design" onclick="switchTab('design')">设计</button>
+      <button data-tab="detail" onclick="switchTab('detail')">功能需求</button>
+      <button data-tab="rules" onclick="switchTab('rules')">规则与口径</button>
+    </nav>
+
+    <!-- ===== OVERVIEW ===== -->
+    <div class="tab-panel active" id="tab-overview">
+      <h1>京飞捡漏 · 北京出发低价机票决策工具</h1>
+      <p class="lead">一个移动优先的 H5 网页：把「北京出发的实时低价机票」与「法定节假日拼假」「境外目的地证件要求」「飞行与在地时间」结合，帮助价格敏感、假期有限的用户快速判断「这张低价票值不值得请几天假去」。本期只做信息发现与引流，不在站内完成支付出票。</p>
+
+      <h2>一、要解决的问题</h2>
+      <div class="card-grid">
+        <div class="info-card"><div class="ic-t">😮‍💨 低价与假期脱节</div><div class="ic-b">用户在比价工具里看到便宜票，却要自己翻日历算「要请几天年假、能玩几天」，决策成本高。</div></div>
+        <div class="info-card"><div class="ic-t">🛂 境外门槛不透明</div><div class="ic-b">看到境外低价票后，还得另外查签证/免签/落地签与护照要求，信息分散且容易过期，临门一脚被劝退。</div></div>
+        <div class="info-card"><div class="ic-t">⏱️ 时间成本难判断</div><div class="ic-b">长途航线「飞多久、到了实际能玩多久」不直观，便宜但耗在路上的票可能并不划算。</div></div>
+        <div class="info-card"><div class="ic-t">📊 信息真伪与时效</div><div class="ic-b">低价票时效性强，用户担心看到的是引流噱头或过期价格，需要明确的更新时间与可信跳转。</div></div>
+      </div>
+
+      <h2>二、产品目标与非目标</h2>
+      <div class="tbl-wrap"><table>
+        <tr><th style="width:90px">类型</th><th>内容</th></tr>
+        <tr><td><b>产品目标</b></td><td>① 让用户在一个页面同时获得「价格 + 拼假天数 + 证件门槛 + 飞行/在地时间」四要素；② 围绕节假日形成可传播的低价专题；③ 以高意向跳转为航司/OTA 引流。</td></tr>
+        <tr><td><b>非目标（本期不做）</b></td><td>站内支付/出票/退改签、会员登录体系、多出发城市、机酒套餐、价格预测与「再等等」建议、UGC 游记。</td></tr>
+      </table></div>
+
+      <h2>三、核心用户与场景</h2>
+      <div class="card-grid">
+        <div class="info-card"><div class="ic-t">👤 主要用户</div><div class="ic-b">常驻北京、22–40 岁、价格敏感且年假有限的上班族/学生；愿意为低价调整出行日期，出境经验深浅不一。</div></div>
+        <div class="info-card"><div class="ic-t">📍 触发时机</div><div class="ic-b">节假日前 1–2 个月规划出游；刷到低价信息想快速判断可行性；确定「能请几天假」后反推目的地。</div></div>
+        <div class="info-card"><div class="ic-t">✅ 完成条件</div><div class="ic-b">用户对某条线路能回答「请几天假、玩几天、证件行不行、飞去多久」，并点击可信渠道跳转完成比价/下单。</div></div>
+      </div>
+
+      <h2>四、P0 范围（最小完整旅程）</h2>
+      <p>用户从进入到完成决策的完整闭环如下，<span class="pill-tag p0">P0</span> 项均已在左侧原型可点击演示：</p>
+      <div class="journey">
+        <div class="jstep"><div class="jn">STEP 1</div><div class="jt">进入低价榜 / 地图</div><div class="jd">默认北京出发，国内/境外双板块；可在列表与低价地图间切换，地图按空间浏览低价。</div></div>
+        <div class="jstep"><div class="jn">STEP 2</div><div class="jt">结合假期筛选</div><div class="jd">查看节假日拼假方案与「需请假天数」，或按可请年假反推。</div></div>
+        <div class="jstep"><div class="jn">STEP 3</div><div class="jt">读懂线路</div><div class="jd">看预估飞行总时间、在地游玩时间、境外证件要求与有效期提醒。</div></div>
+        <div class="jstep"><div class="jn">STEP 4</div><div class="jt">可信跳转</div><div class="jd">选择航司/OTA 渠道带参跳转，离站前明确价格与证件提示。</div></div>
+      </div>
+      <div class="tbl-wrap"><table>
+        <tr><th>编号</th><th>P0 能力</th><th>对应原型</th></tr>
+        <tr><td><span class="fid">F-01</span></td><td>国内 / 境外双板块价格日历（默认北京出发）</td><td>首页板块切换</td></tr>
+        <tr><td><span class="fid">F-02</span></td><td>节假日拼假日历与「建议请假天数」</td><td>拼假日历页</td></tr>
+        <tr><td><span class="fid">F-03</span></td><td>线路卡片/详情的飞行总时间与在地游玩时间</td><td>卡片 + 详情</td></tr>
+        <tr><td><span class="fid">F-04</span></td><td>境外证件（免签/落地签/电子签/提前签证）要求与提醒</td><td>境外详情</td></tr>
+        <tr><td><span class="fid">F-05</span></td><td>搜索与「按可请年假天数」筛选</td><td>搜索弹层</td></tr>
+        <tr><td><span class="fid">F-06</span></td><td>线路详情页（价格时效、报价构成、时间轴）</td><td>详情页</td></tr>
+        <tr><td><span class="fid">F-07</span></td><td>第三方渠道引流跳转（不支付）</td><td>订票弹层</td></tr>
+        <tr><td><span class="fid">F-08</span></td><td>异常/空态/价格失效等恢复路径</td><td>结果页/失效态</td></tr>
+        <tr><td><span class="fid">F-09</span></td><td>低价地图：列表/地图切换、中国/世界双视野、价格/签证/拼假三图层</td><td>首页「地图」视图</td></tr>
+        <tr><td><span class="fid">F-10</span></td><td>签证类型指南：按免签 / 落地签 / 电子签 / 提前办签浏览境外目的地</td><td>首页「签证类型速查」</td></tr>
+      </table></div>
+
+      <h2>五、关键假设与待确认项</h2>
+      <div class="callout tbd">🟣 <b>假设（需业务确认，均标记 <span class="assume">[Assumption,TBD]</span>）</b>
+        <ul style="margin:8px 0 0">
+          <li>固定单一出发城市「北京」，同时覆盖首都 PEK 与大兴 PKX 两场；多城市为 P2。</li>
+          <li>价格来源 = 第三方航班/票价 API 的实时聚合 + 运营人工精选节假日专题，两类内容均需标注来源与更新时间。</li>
+          <li>法定节假日以国务院办公厅发布的当年放假安排为准；原型示例使用 2027 元旦，正式排期以官方公布为准。</li>
+          <li>证件政策按「持中国普通护照、从北京口岸出境、旅游短期停留」为默认口径，港澳台需额外往来证件/签注。</li>
+          <li>本期不做登录，故收藏/订阅/降价提醒等个性化能力降级为 P1/P2。</li>
+          <li>地图原型为自绘示意图；正式版接高德/腾讯等带审图号的合规底图（GCJ-02），具体供应商与 Key 授权、聚合阈值 <span class="assume">[Assumption,TBD]</span>。</li>
+        </ul>
+      </div>
+
+      <h2>六、评审决策清单（逐项拍板）</h2>
+      <p class="lead">下表汇总全文 <span class="assume">[TBD]</span> 项，请评审会逐项给出结论并回填最后一列；<b>A 组阻塞技术方案与排期，须立项前拍板</b>，B 组在开发对应功能前确定即可。</p>
+
+      <div class="lbl">A. 立项前必须拍板（阻塞技术方案 / 商务 / 排期）</div>
+      <div class="tbl-wrap"><table>
+        <tr><th style="width:58px">编号</th><th>待决策项与背景</th><th style="width:200px">建议默认值</th><th style="width:170px">不决定的影响</th><th style="width:96px">建议责任方</th><th style="width:80px">评审结论</th></tr>
+        <tr>
+          <td><span class="fid">D-01</span></td>
+          <td><b>票价趋势数据从哪来</b><br><span class="muted">榜单 / 地图 / 详情 / 日历展示的「当月最低参考价」与每日价格趋势来自 Travelpayouts 历史缓存价（仅做相对低价日判断，非可下单实时价）；用户成交通过跳转 OTA / 航司官网的实时价完成（关联 F-01 / F-06 / F-09）。</span></td>
+          <td><b>国内 + 国际统一：Travelpayouts 价格日历 + OTA 联盟跳转</b>。用 TP 历史缓存价生成「未来一个月每日价格趋势」，仅回答「哪天相对便宜」，<b>不展示/不承诺绝对最低价</b>；用户点击具体日期后通过携程联盟 / Trip.com 等 deeplink 跳转 OTA，以 OTA 实时价成交并返佣。<b>不依赖</b>需海外信用卡/出海网络的 GDS（Amadeus 等）；<b>否决爬虫</b>（法律风险）。TP 实测较 OTA 高 +20%～+70%，故只做趋势参考。</td>
+          <td>最大可行性风险：无数据源则低价榜、地图、详情均无法上线。</td>
+          <td>业务 + 商务 + 技术</td>
+          <td><span class="tag green">已定</span></td>
+        </tr>
+        <tr>
+          <td><span class="fid">D-02</span></td>
+          <td><b>订票渠道白名单、商务合作与归因方式</b><br><span class="muted">产品闭环依赖跳转 OTA / 航司，需确定可合作渠道、是否有返佣及跳转归因（关联 F-07）。</span></td>
+          <td>先签 2–3 家主流 OTA + 航司官网；带参跳转用于归因，不传个人敏感信息；不承诺渠道最终价一致。</td>
+          <td>引流闭环与商业模型不成立，订票弹层只能停在示意。</td>
+          <td>商务 + 法务</td>
+          <td><span class="tag red">待评审</span></td>
+        </tr>
+        <tr>
+          <td><span class="fid">D-03</span></td>
+          <td><b>签证 / 入境政策的维护方式与责任</b><br><span class="muted">免签 / 落地签结论属高风险时效信息，原型为人工逐条核验（关联 F-04 / F-10）。</span></td>
+          <td>运营按目的地维护 DocRule + 官方来源链接，核验周期 <b>30 天</b>；评估接入政策数据服务商；超时 / 缺失一律降级为「请查官方渠道」。</td>
+          <td>F-04 / F-10 无法规模化；错误免签结论可能致用户滞留，有合规风险。</td>
+          <td>运营 + 法务 / 合规</td>
+          <td><span class="tag red">待评审</span></td>
+        </tr>
+        <tr>
+          <td><span class="fid">D-04</span></td>
+          <td><b>签证指南范围：只收在营线路，还是做纯政策库</b><br><span class="muted">F-10 是否覆盖「白本能去的全部国家」（含暂无低价目的地）。</span></td>
+          <td>P0 仅收录在营 / 曾售线路，分组随票目录自动生成；纯政策库（全量国家）列 P1，按国家数量另估运营工作量。</td>
+          <td>决定 F-10 的工作量级（数十条人工维护 vs 全量政策库）。</td>
+          <td>产品</td>
+          <td><span class="tag red">待评审</span></td>
+        </tr>
+        <tr>
+          <td><span class="fid">D-05</span></td>
+          <td><b>地图底图供应商、Key 授权与审图合规</b><br><span class="muted">正式版必须使用带测绘资质与审图号的合规底图（GCJ-02），世界图国境线表达须正确（关联 F-09）。</span></td>
+          <td>选用高德或腾讯地图 JS SDK；企业 Key、配额与域名授权<b>提前申请</b>；世界图审图方案与供应商书面确认。</td>
+          <td>F-09 开发前置条件；Key 审批与审图周期可能卡住排期。</td>
+          <td>技术 + 法务 / 合规</td>
+          <td><span class="tag red">待评审</span></td>
+        </tr>
+      </table></div>
+
+      <div class="lbl" style="margin-top:18px">B. 开发对应功能前确定（不阻塞立项）</div>
+      <div class="tbl-wrap"><table>
+        <tr><th style="width:58px">编号</th><th>待决策项与背景</th><th style="width:200px">建议默认值</th><th style="width:170px">不决定的影响</th><th style="width:96px">建议责任方</th><th style="width:80px">评审结论</th></tr>
+        <tr>
+          <td><span class="fid">D-06</span></td>
+          <td><b>价格有效期阈值与重查策略</b><br><span class="muted">报价超过多久视为陈旧（关联 F-01 / F-06 / F-08）。</span></td>
+          <td>缓存超过 <b>2 小时</b>（可接受区间 1–4 小时，视数据源能力）不展示或自动重查；进详情页强制实时校验一次。</td>
+          <td>可能向用户展示过期价，损害信任、拉高跳失。</td>
+          <td>技术 + 数据</td>
+          <td><span class="tag gray">待评审</span></td>
+        </tr>
+        <tr>
+          <td><span class="fid">D-07</span></td>
+          <td><b>「门到门总耗时」是否默认展示</b><br><span class="muted">在总飞行 + 在地之外，是否加中转等候与首末日各约 3h 地面缓冲（关联 F-03）。</span></td>
+          <td>P0 默认只展示总飞行 + 在地游玩；门到门作为 P1 可选项（开关 / 长按查看），避免首屏信息过载。</td>
+          <td>仅影响信息丰富度，不阻塞主流程。</td>
+          <td>产品</td>
+          <td><span class="tag gray">待评审</span></td>
+        </tr>
+        <tr>
+          <td><span class="fid">D-08</span></td>
+          <td><b>地图气泡聚合阈值与展开方式</b><br><span class="muted">城市增多后同区域气泡重叠如何聚合（关联 F-09）。</span></td>
+          <td>按缩放级别，同区域重叠 ≥ <b>4 个</b>时聚合为「区域名 N 城 ¥xxx 起」，取区内最低可售价；点开展开列表。待真实城市量级校准。</td>
+          <td>城市量小时无影响；放量后影响地图可读性与点击。</td>
+          <td>产品 + 设计</td>
+          <td><span class="tag gray">待评审</span></td>
+        </tr>
+        <tr>
+          <td><span class="fid">D-09</span></td>
+          <td><b>法定放假排期的更新机制</b><br><span class="muted">拼假方案依赖国务院年度放假安排，2027 排期以官方公布为准（关联 F-02）。</span></td>
+          <td>官方发布后 <b>3 个工作日</b>内运营录入并校验拼假方案；未公布年份标「待官方公布」，不臆造放假日期。</td>
+          <td>无官方排期时 F-02 无法生成当年方案（已有降级标识）。</td>
+          <td>运营</td>
+          <td><span class="tag gray">待评审</span></td>
+        </tr>
+        <tr>
+          <td><span class="fid">D-10</span></td>
+          <td><b>榜单是否支持更多排序维度</b><br><span class="muted">除价格外，能否按飞行时长 / 请假天数排序（关联 F-01）。</span></td>
+          <td>P0 默认含税起价升序、同价时运营精选优先；时长 / 请假天数排序列为 P1。</td>
+          <td>仅影响浏览效率，不阻塞主流程。</td>
+          <td>产品</td>
+          <td><span class="tag gray">待评审</span></td>
+        </tr>
+      </table></div>
+      <div class="callout info" style="margin-top:12px">📌 评审结论确定后，应回填本表并同步替换正文中对应的 <span class="assume">[Assumption,TBD]</span> 标记；A 组五项（数据 / 渠道 / 签证维护 / F-10 范围 / 底图）是进入技术方案与排期评审的前置条件。</div>
+    </div>
+
+    <!-- ===== DESIGN ===== -->
+    <div class="tab-panel" id="tab-design">
+      <h1>设计说明</h1>
+      <p class="lead">记录核心用户旅程、关键产品判断与对象模型，作为功能需求的决策依据。</p>
+
+      <h2>一、核心用户旅程（Happy Path）</h2>
+      <div class="journey">
+        <div class="jstep"><div class="jn">触发</div><div class="jt">想薅假期低价</div><div class="jd">元旦前想出去玩，打开 H5，默认北京出发低价榜。</div></div>
+        <div class="jstep"><div class="jn">决策①</div><div class="jt">看拼假</div><div class="jd">进拼假日历，系统给出「请 4 天连休 7 天」方案与请假区间。</div></div>
+        <div class="jstep"><div class="jn">决策②</div><div class="jt">选线路</div><div class="jd">卡片直接看到请假天数、飞行与在地时间、境外证件门槛标签。</div></div>
+        <div class="jstep"><div class="jn">决策③</div><div class="jt">核细节</div><div class="jd">详情核对实时价、报价构成、去返程时间轴与证件清单。</div></div>
+        <div class="jstep"><div class="jn">完成</div><div class="jt">跳转预订</div><div class="jd">选渠道带参跳转，在 OTA/航司完成真正下单。</div></div>
+      </div>
+
+      <h2>二、关键产品判断</h2>
+      <div class="tbl-wrap"><table>
+        <tr><th style="width:150px">判断</th><th>理由</th></tr>
+        <tr><td>做「决策信息」而非「卖票」</td><td>机票销售涉及资质、资金、出票与退改合规；团队冷启动用引流模式验证「拼假 + 低价」价值，闭环路径在 F-07 预留。</td></tr>
+        <tr><td>「请假天数」前置到卡片</td><td>用户最大约束是假期而非价格；卡片层即露出请几天、玩几天，降低点进详情的决策成本。</td></tr>
+        <tr><td>双板块强切分</td><td>国内/境外的决策要素不同：境外必须展示证件，国内不展示；混排会造成信息噪音与合规误解。</td></tr>
+        <tr><td>地图与列表平行而非新数据源</td><td>地图只改变发现视角（空间 + 约束图层），与列表共用线路、价格时效与筛选，避免两套口径；三图层坚持"一图一主题"，避免多维度叠加造成阅读负担。</td></tr>
+        <tr><td>时间用「总飞行 + 在地游玩」双指标</td><td>单一直飞时长不能反映中转与实际游玩窗口；双指标让长航程低价票的性价比可比。</td></tr>
+        <tr><td>证件信息强调时效与免责</td><td>签证政策会变化，产品只做信息聚合与核验提示，必须展示更新时间并引导至官方渠道，不承诺过签。</td></tr>
+        <tr><td>实时数据 + 运营精选并存</td><td>纯 API 缺乏节假日场景叙事，纯人工覆盖与时效不足；榜单为实时聚合，节假日专题由运营编排并标注。</td></tr>
+      </table></div>
+
+      <h2>三、对象模型（产品视角）</h2>
+      <div class="tbl-wrap"><table>
+        <tr><th>对象</th><th>定义</th><th>关键字段（产品口径）</th><th>归属/责任</th></tr>
+        <tr><td><b>线路 Route</b></td><td>北京至某目的地的一组往返可售报价（共享业务对象）</td><td>目的地、目的地理坐标（生产环境为 GCJ-02）、板块、含税起价、数据源、更新时间、去/返程、报价构成</td><td>系统聚合 + 运营精选标注</td></tr>
+        <tr><td><b>假期方案 HolidayPlan</b></td><td>某法定节假日的拼假建议</td><td>法定区间、建议请假日期、请假天数、连休总天数、适配行程长度</td><td>运营依据官方放假安排维护</td></tr>
+        <tr><td><b>证件要求 DocRule</b></td><td>目的地对中国普通护照短期旅游的入境要求</td><td>政策类型、可否落地办理、护照/证件有效期、材料、办理时长、更新时间、来源</td><td>运营维护 + 来源链接，系统按目的地关联</td></tr>
+        <tr><td><b>时间估算 TimeEst</b></td><td>该线路的时间口径结果</td><td>去/返程飞行时长、中转次数、总飞行时间、在地游玩时间、跨时区说明</td><td>系统按班期计算（口径见规则页）</td></tr>
+        <tr><td><b>渠道 Channel</b></td><td>承接预订的外部航司/OTA</td><td>名称、类型、跳转链接、报价口径说明</td><td>商务合作/白名单，系统带参跳转</td></tr>
+      </table></div>
+
+      <h2>四、角色与权限</h2>
+      <p>本期无登录，只有<b>匿名访客</b>单一 C 端角色，可浏览、筛选、查看详情、跳转、本地收藏（P1）。运营对「精选线路、假期方案、证件规则」的维护属于后台能力，<b>不在本期 P0 交付</b>，但其产出是前台数据来源，需在规则页定义更新与失效责任。</p>
+
+      <h2>五、主要恢复路径</h2>
+      <ul>
+        <li><b>价格失效</b>：进入详情时实时报价已无库存 → 展示失效态，提供「同目的地近期其他日期」与重查，而非展示陈旧价格。</li>
+        <li><b>无匹配线路</b>：按可请年假天数筛选无结果 → 说明约束过严，建议放宽天数或板块，保留用户已选条件。</li>
+        <li><b>证件政策过期/缺失</b>：证件规则超过更新时限或缺失 → 降级为「请出行前查询官方渠道」强提示，不展示可能错误的具体承诺。</li>
+      </ul>
+    </div>
+
+    <!-- ===== DETAIL ===== -->
+    <div class="tab-panel" id="tab-detail">
+      <h1>功能需求</h1>
+      <p class="lead">按用户任务组织。每个功能有稳定 ID，与左侧原型联动；表中字段、状态与计算口径统一见「规则与口径」页。</p>
+
+      <!-- F-01 -->
+      <section class="feature-section" id="feature-board">
+        <div class="fs-head"><span class="pill-tag p0">P0</span><h3>F-01 国内 / 境外双板块价格日历</h3></div>
+        <p><b>用户价值：</b>不展示「绝对最低价」（第三方缓存价与 OTA 实时价存在 20%~70% 偏差，不能作为可下单价格承诺），而是用<b>未来一个月每日价格的相对趋势</b>帮用户回答「飞这个目的地，哪几天相对便宜」，再引导用户前往 OTA 查询该日实时价并成交。</p>
+        <div class="lbl">触发与流程</div>
+        <ol>
+          <li>进入首页默认定位出发地「北京（PEK/PKX）」，加载低价日历列表，默认展示「国内」板块。</li>
+          <li>用户点击「国内 / 境外」分段控件即时切换列表；<b>境外</b>列表的每张卡片必须含证件门槛标签，<b>国内</b>列表不展示证件元素。</li>
+          <li>每张线路卡片展示：目的地（中/英文名）、<b>当月最低参考价及对应日期</b>（如「12月5日 最低 ¥532」）、建议请假天数标签、总飞行时间、在地游玩时间；境外卡额外展示证件政策类型。卡片底部标注「价格趋势参考」。</li>
+          <li>点击卡片进入 <code>F-06</code> 详情（含「价格日历趋势」面板，列出当月最低/最高与最便宜 3 天）；点击卡片右下角「📅 看价格日历」进入价格日历屏（F-01 子视图），查看整月每日价格热力。</li>
+        </ol>
+        <div class="lbl">规则与边界</div>
+        <ul>
+          <li>价格口径：来自 Travelpayouts 历史缓存价，<b>仅用于判断「哪天相对便宜」，不展示、不承诺绝对最低价</b>；卡片与详情一律标注「趋势参考，实时价以 OTA 为准」。</li>
+          <li>列表默认按「当月最低参考价升序」排序；是否支持按飞行时长/请假天数排序列为 P1。</li>
+          <li>出发地在本期固定北京且不可更改；点击出发地区域给出「更多城市即将开放」的不可用反馈，不出现死按钮。</li>
+          <li>板块切换不产生跨板块信息：境外证件字段永不出现在国内卡上。</li>
+          <li>用户最终成交发生在跳转后的 OTA / 航司官网，本产品不碰支付、不出票、不展示可下单的绝对价。</li>
+        </ul>
+        <div class="lbl">原型对应</div><p class="muted">首页「📅 低价日历 · 哪天飞最便宜」分段控件（国内/境外）与「列表 / 地图」视图切换；线路卡片显示当月最低参考日与价格，可点进详情或直接「看价格日历」进入整月日历屏。</p>
+      </section>
+
+      <!-- F-09 -->
+      <section class="feature-section" id="feature-map">
+        <div class="fs-head"><span class="pill-tag p0">P0</span><h3>F-09 低价地图模式（空间发现视图）</h3></div>
+        <p><b>用户价值：</b>列表回答"哪个最便宜"，地图回答"<b>世界哪儿有便宜票、这个价要飞多远、签证/请假门槛如何</b>"——把价格、距离、出行约束在同一空间视图里看懂，并和列表共用同一套数据与筛选，两种视图随时切换、口径一致。</p>
+        <div class="lbl">入口与视野</div>
+        <ol>
+          <li>入口位于首页低价榜标题行的「☰ 列表 / 🗺️ 地图」开关；返回即回列表，浏览位置与已选板块保留。</li>
+          <li>视野<b>跟随板块自动切换</b>：国内板块 → 中国视野（含海南、台湾等岛屿完整表达，岛屿与大陆同色）；境外板块 → 以北京为中心的世界视野，覆盖东南亚/东亚、中东/欧洲方向。</li>
+          <li>地图与列表共用线路数据、价格时效与全部筛选条件（板块、请假天数），只改变呈现，不另造数据。</li>
+        </ol>
+        <div class="lbl">三个信息图层（一图一主题，可切换）</div>
+        <div class="tbl-wrap"><table>
+          <tr><th>图层</th><th>气泡颜色口径</th><th>帮用户判断</th></tr>
+          <tr><td>💰 价格热力（默认）</td><td>同板块内「当月最低参考价」线性归一：绿=更便宜（捡漏）→ 橙 → 红褐=相对较高；失效价灰色</td><td>哪个区域低价最密集、目的地之间贵多少</td></tr>
+          <tr><td>🛂 签证门槛（仅境外有差异）</td><td>绿=免签，蓝=电子签/落地签，紫=需提前办签；国内视野统一灰蓝（身份证即可）</td><td>能不能"说走就走"，复用 F-04 政策类型，不另立口径</td> </tr>
+          <tr><td>📅 拼假可行</td><td>选择"最多请几天假"后：预算内目的地蓝色全亮，超预算的变灰半透明</td><td>按年假预算在地图上"圈定能去的地方"，预算与 F-05 共用同一请假档位</td></tr>
+        </table></div>
+        <div class="lbl">空间元素与交互</div>
+        <ul>
+          <li>北京出发地用红星标注；以其为圆心绘制<b>飞行时间同心圈</b>（世界视野约 3h / 6h / 10h+，中国视野约 2h / 5h），把 F-03 总飞行时间空间化；同心圈为等时示意，不作为精确距离。</li>
+          <li>每个目的地为"价格气泡"：当月最低参考价直接标注在气泡内，城市名在气泡下方；点按高亮并在<b>地图底部浮出小卡片</b>（城市、价格、请假标签、签证标签、总飞/在地时间、中转），浮卡展开期间临时收起图例/水印避免遮挡，"查看完整详情"进入 F-06；<b>再次点按同一气泡可收起浮卡</b>，切换板块/图层/请假预算时浮卡自动收起。</li>
+          <li>缩放导致同区域气泡重叠时按区域聚合（如"东南亚 N 城 ¥xxx 起"），聚合阈值与展开方式 <span class="assume">[Assumption,TBD]</span>；原型城市较少，直接全量展示。</li>
+          <li>失效价格（如巴厘岛示例）在地图上同样显示灰色"失效"气泡，点按展示失效小卡并引导替代线路，与 F-08 一致。</li>
+        </ul>
+        <div class="callout warn"><b>底图合规（正式实现必须遵守）：</b>原型为自绘风格化 SVG <b>示意图（非测绘图，已在图内标注）</b>。正式 H5 须使用具备<b>测绘资质、带审图号</b>的合规底图（境内如高德/腾讯地图 JS SDK，GCJ-02 坐标），由地图引擎投影换算像素；<b>世界地图须正确表达国境线，台湾、南海诸岛等不得缺失或错绘，中国视野岛屿与大陆同色</b>。境内环境不得直连未合规的境外地图服务。</div>
+        <div class="lbl">边界</div>
+        <ul>
+          <li>地图不产生列表之外的新价格/新政策；气泡点击热区要适配触屏，气泡过密时优先聚合而非缩小到不可点。</li>
+          <li>加载中显示底图骨架与气泡淡入；某区域暂无数据不留空白点，以"暂无低价"区域态或不放置气泡处理。</li>
+        </ul>
+        <div class="lbl">原型对应</div><p class="muted">首页低价榜标题行「🗺️ 地图」开关 → 低价地图页：可切换国内/境外视野、三个图层、请假预算档位，点按气泡出现小卡并可进详情。</p>
+      </section>
+
+      <!-- F-02 -->
+      <section class="feature-section" id="feature-holiday">
+        <div class="fs-head"><span class="pill-tag p0">P0</span><h3>F-02 节假日拼假日历与建议请假天数</h3></div>
+        <div class="rule">
+        <p><b>用户价值：</b>直接回答「为了这趟旅行要请几天年假、怎么请最划算、能连休几天」。</p>
+        <div class="lbl">触发与流程</div>
+        <ol>
+          <li>首页「假期捡漏」展示<b>最近一个</b>法定节假日的最优拼假方案摘要（法定区间、建议请假日期、请假天数、连休总天数）；点击或底部「假期」Tab 进入拼假日历。</li>
+          <li>日历以颜色区分：法定放假日、周末、建议请年假日；顶部可切换各法定节假日。</li>
+          <li>系统为每个假期给出至少一个「最优拼假方案」：请假区间、<b>需请假天数</b>、连休总天数，并据此推荐「适合的行程长度（在地游玩天数）」区间。</li>
+          <li>日历下方展示「这个假期能去哪儿」：按该连休长度可达成的低价线路（自动套用到 <code>F-01</code> 列表，过滤在地时间适配的线路）。</li>
+        </ol>
+        <div class="lbl">拼假计算规则（口径见规则页）</div>
+        <ul>
+          <li>最优方案 = 在「请假天数最少」前提下「连休总天数最长」的请假区间；存在并列时优先请与法定假相邻的工作日。</li>
+          <li>同时提供「不请假（仅法定+周末）」「最少请假」「充分连休」至少三档，让用户按年假余额选择。</li>
+          <li>线路卡片与详情上的「建议请假 X 天」必须与其可搭乘假期方案一致，不得各算各的。</li>
+        </ul>
+        <div class="lbl">边界</div>
+        <ul>
+          <li>法定放假安排未官方公布的年度，对应假期标记「安排待公布」，不杜撰具体日期。</li>
+          <li>调班（周末需上班）的日期需在日历明确标识，避免用户误以为是休息日。</li>
+        </ul>
+        </div>
+        <div class="lbl">原型对应</div><p class="muted">首页假期横幅、「拼假日历」整页（切换假期、图例、方案、假期线路）。</p>
+      </section>
+
+      <!-- F-03 -->
+      <section class="feature-section" id="feature-time">
+        <div class="fs-head"><span class="pill-tag p0">P0</span><h3>F-03 预估飞行总时间与在地游玩时间</h3></div>
+        <p><b>用户价值：</b>判断「便宜是否值得耗在路上」，并与拼假天数对齐。</p>
+        <div class="lbl">展示与计算</div>
+        <ul>
+          <li><b>预估总飞行时间</b>：去程与回程所有航段实际飞行时长之和（含经停但不含中转等候）；中转次数单独标注。[Assumption,TBD] 是否把中转等候计入「门到门总耗时」在规则页给出可选口径。</li>
+          <li><b>在地游玩时间</b>：去程落地（当地时间）到返程起飞（当地时间）之间扣除首末日建议的交通/恢复缓冲后的<b>可游玩时长</b>，折算为「X 天 Y 晚 / 约 X 个完整白天」。</li>
+          <li>卡片层展示精简双指标（如「飞 3.5h · 玩 4 天」）；详情页用去返程时间轴展示起降时刻、中转、跨时区与昼夜损失说明。</li>
+          <li>跨时区/跨日航线必须标注「日期增减」提示，避免用户误算请假区间。</li>
+        </ul>
+        <div class="lbl">边界</div>
+        <ul>
+          <li>时间均为<b>预估值</b>，基于班期计划时刻，标注「以实际航班时刻为准」；航班时刻未确定（远期）时给区间值而非确定值。</li>
+          <li>同一目的地存在多路线（直飞/中转）时，默认展示总飞行最短方案，并可在详情查看其他方案的时间差异（P0 至少展示一个备选口径说明）。</li>
+        </ul>
+        <div class="lbl">原型对应</div><p class="muted">卡片底部双指标、详情「行程时间」面板与去返程时间轴。</p>
+      </section>
+
+      <!-- F-04 -->
+      <section class="feature-section" id="feature-doc">
+        <div class="fs-head"><span class="pill-tag p0">P0</span><h3>F-04 境外证件要求与核验提醒</h3></div>
+        <p><b>用户价值：</b>在被低价打动的同一时刻看清入境门槛，避免到机场才发现证件不符。</p>
+        <div class="lbl">触发与展示</div>
+        <ol>
+          <li>仅境外线路展示。卡片用政策类型标签：<span class="tag green">免签</span> / <span class="tag blue">落地签</span> / <span class="tag blue">电子签 eTA</span> / <span class="tag purple">需提前办签</span>，港澳台标注所需往来证件与签注。</li>
+          <li>详情提供证件面板：政策状态、停留时长、护照/证件有效期要求（通常≥6 个月）、所需材料、是否可落地/在线办理、建议预留办理时长、<b>信息更新时间与官方来源链接</b>。</li>
+          <li>结合用户行程日期给出<b>倒计时提醒</b>：如「距出行 64 天，电子签约预留 7 天，时间充足」；当剩余天数低于建议办理时长时升级为风险色提示。</li>
+        </ol>
+        <div class="lbl">口径与免责</div>
+        <ul>
+          <li>默认对象为<b>持中国普通护照、北京口岸出境、短期旅游</b>；其他护照身份/长居/公务出行不适用，面板需声明口径。</li>
+          <li>产品仅聚合信息，不代办、不承诺过签；政策可能变更，必须有更新时间与「以该国官方/使领馆为准」声明。</li>
+          <li>规则超过更新时限或缺失 → 降级为通用强提示「出行前请查询官方渠道」，不展示具体免签/落地签承诺（对应恢复路径）。</li>
+        </ul>
+        <div class="callout warn">合规边界：证件信息属于高风险时效信息，错误的「免签」结论可能导致用户滞留。宁可降级提示，不可展示未经核验的具体承诺。</div>
+        <div class="lbl">原型对应</div><p class="muted">境外卡片证件标签、详情「入境证件」面板（免签/电子签两种示例 + 风险倒计时）。</p>
+      </section>
+
+      <!-- F-10 -->
+      <section class="feature-section" id="feature-visa">
+        <div class="fs-head"><span class="pill-tag p0">P0</span><h3>F-10 签证类型指南（按入境门槛浏览目的地）</h3></div>
+        <p><b>用户价值：</b>回答「我这本护照现在能去哪」——白本或不想提前办签的用户可直接从免签 / 落地签切入选目的地，而不是先比价再逐个查政策；与 F-04「订票前核证件」互补，本功能把签证前置为<b>发现入口</b>。</p>
+        <div class="lbl">入口</div>
+        <ul>
+          <li>首页「🛂 签证类型速查」模块：四列展示各类型下<b>当前在营 / 曾售境外目的地数量</b>（免签、落地签、电子签、提前办签），点模块或右上角「全部政策」进入指南页；不新增底部 Tab。</li>
+        </ul>
+        <div class="lbl">页面结构与交互</div>
+        <ol>
+          <li>顶部固定口径声明：中国普通护照 / 北京口岸出境 / 短期旅游 / 政策核验月份，与 F-04 完全一致。</li>
+          <li>类型筛选 chips：全部 / ✅ 免签 / 🛬 落地签 / 🪪 电子签·eTA / 📝 需提前办签，每个带目的地数量；默认「全部」。</li>
+          <li>按类型分组列目的地：组头给出该类型一句话定义与数量；每条目的国行展示旗帜、城市（中英）、<b>准许停留期</b>、政策核验时间、类型标签与当前含税低价。</li>
+          <li>某目的地当前无有效低价（如失效价示例）仍保留在分组内，价格位显示「该低价已失效」，点按进入对应失效详情；<b>不因无票而丢失政策入口</b>。</li>
+          <li>点按任意目的国行进入 F-06 详情，复用其「入境证件」面板与 F-07 订票引流，本页不另建政策详情页。</li>
+        </ol>
+        <div class="lbl">规则与边界</div>
+        <ul>
+          <li>类型枚举、配色、免责与降级口径与 F-04 类型表、F-09 签证图层<b>三处一致，单一数据源</b>；指南只做分组与导航，不独立编写或判定政策。</li>
+          <li>分组数量由当前线路目录实时计算，不手工维护；仅有政策、暂无可售低价的国家是否纳入（纯政策库 / 白本能去的全部国家）<span class="assume">[Assumption,TBD]</span>，原型只含在营或曾售线路。</li>
+          <li>仅境外；国内持身份证不在本指南。港澳台按 F-04 以「往来证件 + 签注」类型单列，原型暂无样例。</li>
+          <li>处于待核验 / 缺失状态的政策不进入免签 / 落地签分组的绿色 / 蓝色承诺展示，按 F-04 降级口径置灰并提示查询官方渠道。</li>
+        </ul>
+        <div class="lbl">原型对应</div><p class="muted">首页「签证类型速查」模块与实时计数、签证指南页（口径声明、类型筛选、分组定义、目的国行与停留期 / 核验时间、失效态、点按进详情）。</p>
+      </section>
+
+      <!-- F-05 -->
+      <section class="feature-section" id="feature-search">
+        <div class="fs-head"><span class="pill-tag p0">P0</span><h3>F-05 搜索与「按可请年假天数」筛选</h3></div>
+        <p><b>用户价值：</b>用最稀缺的约束——年假——反向圈定可行目的地，而不是先选目的地再算假。</p>
+        <div class="lbl">流程</div>
+        <ol>
+          <li>点击首页搜索框打开发现弹层：支持按城市/国家关键词搜索目的地。</li>
+          <li>提供「我最多能请几天假」档位（0 / 1–2 / 3–4 / 5+ 天），选择后系统结合假期方案，筛出<b>所需请假天数不超过该值</b>的线路（纯周末与法定假方案对应 0 天）。</li>
+          <li>可叠加板块（国内/境外/不限）；点击查看结果进入结果列表，沿用 <code>F-01</code> 卡片样式并显示筛选条件。</li>
+        </ol>
+        <div class="lbl" id="feature-filter">筛选规则与边界</div>
+        <ul>
+          <li>筛选只缩小集合，不改变价格与时间口径；结果为空时进入 <code>F-08</code> 空态并保留已选条件，提供放宽建议。</li>
+          <li>关键词无匹配时不跳转，就地提示并推荐热门目的地；不提供伪造结果。</li>
+          <li>请假天数筛选与假期方案共用同一计算结果，保证两处「需要请假天数」一致。</li>
+        </ul>
+        <div class="lbl">原型对应</div><p class="muted">首页搜索框 → 发现弹层（关键词 + 请假档位 + 板块）→ 结果页/空态。</p>
+      </section>
+
+      <!-- F-06 -->
+      <section class="feature-section" id="feature-detail">
+        <div class="fs-head"><span class="pill-tag p0">P0</span><h3>F-06 线路详情：价格、报价构成与时间轴</h3></div>
+        <p><b>用户价值：</b>在跳转前建立信任并核实关键事实。</p>
+        <div class="lbl">面板构成</div>
+        <ul>
+          <li><b>顶部</b>：目的地、含税起价、价格更新时间、数据来源、运营/实时标识。</li>
+          <li><b>拼假</b>：适配的假期方案、建议请假区间与天数、连休总天数（链接 F-02 口径）。</li>
+          <li><b>行程时间</b>：去/返程起降时刻、总飞行时间、中转次数、在地游玩时间与跨时区说明（F-03）。</li>
+          <li><b>证件</b>（仅境外）：完整证件面板（F-04）。</li>
+          <li><b>报价构成</b>：明确「起价」含义——含税、含/不含托运行李、适用日期与余票紧张程度；列出该价格对应的具体去返日期。</li>
+        </ul>
+        <div class="lbl">状态</div>
+        <ul>
+          <li><b>默认</b>：正常展示；<b>余票紧张</b>：展示「剩余少量座位」（来自数据源真实状态，不虚构数字）。</li>
+          <li><b>价格失效</b>：进入详情若无该价库存，切换失效态（F-08），禁用底部「去订票」并给替代方案。</li>
+        </ul>
+        <div class="lbl">原型对应</div><p class="muted">详情整页（国内哈尔滨示例无证件面板；境外大阪/清迈示例含完整面板）。</p>
+      </section>
+
+      <!-- F-07 -->
+      <section class="feature-section" id="feature-redirect">
+        <div class="fs-head"><span class="pill-tag p0">P0</span><h3>F-07 第三方渠道引流跳转（不收款）</h3></div>
+        <p><b>用户价值：</b>从决策无缝进入可信购买，同时明确本站不参与交易。</p>
+        <div class="lbl">流程</div>
+        <ol>
+          <li>详情底部「去订票」打开渠道选择弹层，列出该线路可用的航司官网/OTA（白名单），标注各渠道类型。</li>
+          <li>离站前强提示：价格以渠道实时下单页为准、境外需自备有效证件、行李与退改规则见渠道页。</li>
+          <li>选择渠道后携带目的地/日期等参数新开页跳转；站内<b>不</b>出现支付、出票、订单、退改环节。</li>
+        </ul>
+        <div class="lbl">边界与信任</div>
+        <ul>
+          <li>渠道须为合作/可信白名单，跳转使用可追踪参数用于归因，但不传递个人敏感信息（本期无登录也无此类信息）。</li>
+          <li>不对渠道最终价做一致性承诺；若渠道价显著高于展示价，属正常实时波动，文案需预先说明。</li>
+        </ul>
+        <div class="lbl">原型对应</div><p class="muted">详情底部「去订票」→ 渠道弹层（含免责提示）。原型以 Toast 模拟跳转，不离开页面。</p>
+      </section>
+
+      <!-- F-08 -->
+      <section class="feature-section" id="feature-state">
+        <div class="fs-head"><span class="pill-tag p0">P0</span><h3>F-08 异常、空态与价格失效恢复</h3></div>
+        <p><b>用户价值：</b>在数据不确定时获得诚实反馈和下一步，而不是看到错误或陈旧信息。</p>
+        <div class="tbl-wrap"><table>
+          <tr><th>状态</th><th>触发</th><th>表现与恢复</th></tr>
+          <tr><td>加载中</td><td>榜单/详情取数</td><td>使用骨架卡片，不阻塞页面框架。</td></tr>
+          <tr><td>空结果</td><td>请假天数/板块筛选无匹配</td><td>说明约束过严，提供「放宽天数 / 切换板块 / 查看热门」，保留已选条件。</td></tr>
+          <tr><td>价格失效</td><td>详情实时价无库存</td><td>失效提示 + 禁用订票 + 推荐同目的地近期日期与相似线路。</td></tr>
+          <tr><td>网络/接口失败</td><td>数据源不可用</td><td>页内错误态 + 重试；不使用过期缓存冒充实时价，可降级展示运营精选并标注。</td></tr>
+          <tr><td>证件缺失/过期</td><td>DocRule 缺失或超时</td><td>降级为官方渠道查询强提示（见 F-04）。</td></tr>
+        </table></div>
+        <div class="lbl">原型对应</div><p class="muted">在搜索弹层选择「境外」+「0 天请假」可触发空态结果页（境外无周末零请假线路）；境外低价榜中的「巴厘岛」卡片展示价格失效，点击进入失效详情态。</p>
+      </section>
+
+      <h2>P1 / P2 储备（不在本期演示）</h2>
+      <div class="tbl-wrap"><table>
+        <tr><th>优先级</th><th>能力</th><th>说明</th></tr>
+        <tr><td><span class="pill-tag p1">P1</span></td><td>本地收藏 / 降价提醒（需通知授权）</td><td>无登录下先用本地存储；推送依赖浏览器/微信能力。</td></tr>
+        <tr><td><span class="pill-tag p1">P1</span></td><td>多排序与价格日历</td><td>按请假天数、飞行时长排序；按月历查看最便宜日期。</td></tr>
+        <tr><td><span class="pill-tag p1">P1</span></td><td>运营节假日专题落地页</td><td>主题合集 + 内容化编排（后台维护能力配套）。</td></tr>
+        <tr><td><span class="pill-tag p2">P2</span></td><td>多出发城市、机酒套餐、登录与跨端同步、价格预测</td><td>需登录、供应链或算法能力，验证 P0 价值后再评估。</td></tr>
+      </table></div>
+    </div>
+
+    <!-- ===== RULES ===== -->
+    <div class="tab-panel" id="tab-rules">
+      <h1>规则与口径</h1>
+      <p class="lead">统一全产品的字段定义、状态、计算与时效口径，避免原型与文档、不同页面之间自相矛盾。</p>
+
+      <h2>一、拼假与请假天数计算</h2>
+      <div class="formula">输入：法定放假集合 H（含调休形成的连续休息）、周末集合 W、候选工作日集合 D
+连休区间 = 包含目标假期的最长连续「休息日 + 选中请假日」
+需请假天数 L = 为形成该连休区间而额外请掉的工作日数量（不含本来就免费的周末/法定日）
+连休总天数 R = 连休区间自然日总数
+最优方案 = 先最小化 L，再最大化 R；并列时优先与法定日相邻的工作日</div>
+      <ul>
+        <li>示例（2027 元旦）：法定 1/1–1/3（周五–周日）。请 12/28(一)–12/31(四) 共 <b>4 天</b>年假 → 连休 <b>12/28–1/3 共 7 天</b>。</li>
+        <li>「不请假档」L=0，R=法定+相邻周末天数；卡片在无适配假期时显示「需请假 0 天（周末短途）」。</li>
+        <li>需调班的周末计为<b>工作日</b>，若落在行程内须额外请假或避开，日历单独标识。</li>
+      </ul>
+
+      <h2>二、时间估算口径（F-03）</h2>
+      <div class="tbl-wrap"><table>
+        <tr><th>指标</th><th>定义</th><th>备注</th></tr>
+        <tr><td>单段飞行时长</td><td>该航段计划起飞到计划落地的实际飞行时间（当地时间换算后）</td><td>含经停停机时间，不含中转换乘等候</td></tr>
+        <tr><td>总飞行时间</td><td>去程各段 + 回程各段之和</td><td>中转次数单独计数展示</td></tr>
+        <tr><td>门到门总耗时（可选）</td><td>总飞行 + 中转等候 + 首末日机场地面缓冲（建议各 3h）</td><td>[Assumption,TBD] 是否默认展示待定</td></tr>
+        <tr><td>在地游玩时间</td><td>返程起飞当地时间 − 去程落地当地时间 − 缓冲（末日取返程前 X 小时）</td><td>折算「完整白天数」与「晚数」，跨时区按当地日期计</td></tr>
+      </table></div>
+      <div class="callout info">展示统一用「约」字与「以实际航班时刻为准」；远期班期未确定时给区间（如「约 3.5–4h」）。</div>
+
+      <h2>三、证件政策类型与状态（F-04）</h2>
+      <div class="tbl-wrap"><table>
+        <tr><th>类型</th><th>含义</th><th>卡片标签</th><th>必备提示</th></tr>
+        <tr><td>免签</td><td>短期旅游无需签证入境</td><td><span class="tag green">免签 X 天</span></td><td>停留上限、护照有效期≥6个月、返程票</td></tr>
+        <tr><td>落地签</td><td>抵达后在口岸办理</td><td><span class="tag blue">落地签</span></td><td>费用/材料/照片、可能排队、现金</td></tr>
+        <tr><td>电子签/eTA</td><td>出行前在线申请</td><td><span class="tag blue">电子签</span></td><td>办理时长、收费、出签不确定性</td></tr>
+        <tr><td>提前办签</td><td>需使领馆/签证中心提前办理</td><td><span class="tag purple">需提前办签</span></td><td>预留时长、材料、预约/指纹</td></tr>
+        <tr><td>港澳台</td><td>往来通行证 + 相应签注/入台证</td><td><span class="tag purple">需往来证件</span></td><td>证件类型、签注类别</td></tr>
+      </table></div>
+      <p><b>时效规则：</b>DocRule 必须有 <code>last_verified_at</code>；超过约定有效期 [Assumption,TBD，建议 30 天] 或来源不可达时，前台降级为通用官方查询提示，不显示具体政策承诺。倒计时阈值 = 出行日期 − 今日；&lt; 建议办理时长即风险提示。</p>
+      <p><b>指南分组（F-10）：</b>签证类型指南页与首页计数仅按上表枚举对<b>当前线路目录</b>分组，复用同一份 DocRule，不另建政策数据源；同一目的地在 F-04 证件面板、F-09 签证图层、F-10 指南三处的类型必须一致；待核验 / 缺失政策的目的地不进入免签 / 落地签分组。</p>
+
+      <h2>四、价格与数据时效</h2>
+      <div class="tbl-wrap"><table>
+        <tr><th>项</th><th>口径</th></tr>
+        <tr><td>价格口径</td><td>默认展示<b>含税往返起价</b>（人民币）；「起价」对应特定日期与舱位，详情列出适用日期。</td></tr>
+        <tr><td>行李/退改</td><td>起价是否含托运行李需标注；具体退改与行李规则以渠道页为准。</td></tr>
+        <tr><td>更新时间</td><td>每条报价带抓取/缓存时间；超过价格有效期 [TBD，建议 1–4 小时] 不展示或触发重查。</td></tr>
+        <tr><td>来源标识</td><td>区分「实时聚合」与「运营精选」；运营精选也必须基于可核验报价，不允许纯文案价。</td></tr>
+        <tr><td>余票状态</td><td>仅展示数据源返回的真实紧张状态，不虚构剩余张数。</td></tr>
+      </table></div>
+
+      <h2>五、对象状态机</h2>
+      <div class="tbl-wrap"><table>
+        <tr><th>对象</th><th>状态</th><th>迁移触发</th></tr>
+        <tr><td>线路报价</td><td>加载中 → 可售 / 失效 / 取数失败</td><td>实时查询返回；无库存转失效；异常转失败（可重试）</td></tr>
+        <tr><td>假期方案</td><td>待官方公布 / 已公布可用</td><td>国务院放假安排发布后由运营更新</td></tr>
+        <tr><td>证件规则</td><td>正常 / 待核验（超时）/ 缺失</td><td>超过有效期或来源失败 → 降级提示</td></tr>
+      </table></div>
+
+      <h2>六、地图与底图口径（F-09）</h2>
+      <div class="tbl-wrap"><table>
+        <tr><th style="width:130px">项</th><th>口径</th></tr>
+        <tr><td>视图数据源</td><td>地图气泡与列表线路一一对应，共用同一报价/证件/时间计算结果；地图不单独定价、不单独判定签证。</td></tr>
+        <tr><td>坐标与投影</td><td>原型：在各视野内对经纬度做线性映射到 SVG 像素，仅作示意；生产：使用合规地图引擎（GCJ-02）提供的投影接口，按当前缩放/视野实时换算，禁止手写映射。</td></tr>
+        <tr><td>价格热力配色</td><td>在<b>当前板块内</b>以含税起价 min/max 线性归一后映射 绿→橙→红褐；切换板块重新归一，不跨板块比较颜色。</td></tr>
+        <tr><td>签证图层配色</td><td>与 F-04 类型表一致：免签绿、电子签/落地签蓝、提前办签紫、国内灰蓝；证件规则处于待核验/缺失时该气泡不显示绿色承诺，按降级口径置灰并提示。</td></tr>
+        <tr><td>拼假可行判定</td><td>与 F-05 同口径：线路所需请假天数 ≤ 所选档位上限（0 / 2 / 4 / 99 天，分别对应 0、1–2、3–4、5+ 天）。</td></tr>
+        <tr><td>飞行时间圈</td><td>以北京为圆心的等时示意圈（世界 3h/6h/10h+；中国 2h/5h），按大圆距离约估，图内标注"非真实比例"；不作为报价或行程承诺。</td></tr>
+        <tr><td>聚合</td><td>缩放后气泡重叠超过阈值时按区域聚合，文案"区域名 N 城 ¥xxx 起"，价格取该聚合内最低可售起价；阈值 <span class="assume">[TBD]</span>。</td></tr>
+        <tr><td>合规底图</td><td>必须使用具备测绘资质、带审图号的底图；世界地图国境线及台湾、南海诸岛等表达须正确；中国视野海南、台湾等岛屿完整且与大陆同色；境内不直连未合规境外地图服务。</td></tr>
+      </table></div>
+
+      <h2>七、统一文案与边界约定</h2>
+      <ul>
+        <li>所有时间类数字前缀「约」，所有价格后缀「起」并注明含税；不承诺渠道最终价。</li>
+        <li>境内线路任何位置不出现签证/护照字段；境外线路任何价格旁建议附带证件门槛入口。</li>
+        <li>不可用功能（收藏、我的、多城市、价格预测）点击给明确不可用反馈，不放置无响应控件。</li>
+        <li>本期无账号体系，不收集身份证/护照号等敏感信息；跳转不带个人敏感参数。</li>
+      </ul>
+
+      <div class="callout tbd">📌 所有 <span class="assume">[Assumption,TBD]</span> 项已汇总至「概览 · 六、评审决策清单」（D-01～D-10），含建议默认值、影响面与责任方，评审结论回填后替换本页对应标记。</div>
+    </div>
+
+  </section>
+</main>
+
+<script>
+/* ===================== DATA ===================== */
+const HOLIDAYS = [
+  {id:"yuandan", name:"2027 元旦", month:"2027 年 1 月",
+   legal:["1/1","1/2","1/3"], workweek:[],
+   plans:[
+     {name:"充分连休（推荐）", ask:"12/28(一)–12/31(四)", leave:4, total:7, range:"12/28 – 1/3", fit:"在地 4–5 晚，适合日本/东南亚/国内长线"},
+     {name:"最少请假", ask:"12/31(四)", leave:1, total:4, range:"12/31 – 1/3", fit:"在地 2–3 晚，适合国内/短途出境"},
+     {name:"不请假", ask:"无", leave:0, total:3, range:"1/1 – 1/3", fit:"周末级短途，周边/国内"}
+   ],
+   // 2027 Jan: Jan1 Fri. Build Dec28(Mon)..Jan3(Sun)
+   cells:genCells(2027,1,{preDays:4})},
+  {id:"chunjie", name:"2027 春节", month:"安排待公布", pending:true,
+   legal:[], workweek:[], plans:[], cells:[]},
+  {id:"qingming", name:"2027 清明", month:"安排待公布", pending:true, legal:[], workweek:[], plans:[], cells:[]},
+  {id:"wuyi", name:"2027 劳动节", month:"安排待公布", pending:true, legal:[], workweek:[], plans:[], cells:[]}
+];
+
+function genCells(year,month,opt){
+  // renders last `preDays` of previous month + full target month, marking a fixed window
+  // For prototype we hardcode the Dec28-Jan3 window visually relative to Jan grid.
+  return null; // rendered custom below
+}
+
+// 价格日历数据（来源 Travelpayouts 2026-12 缓存价，仅供趋势参考，实时价以 OTA 为准）
+window.CAL_DATA={"month":"2026-12","currency":"CNY","gen":"2026-10-29T12:02:50","calendars":[{"route":"PEK-HRB","cn":"哈尔滨","board":"dom","minDay":"2026-12-05","min":531.9,"max":1073.2,"days":{"2026-12-05":531.9,"2026-12-01":641.9,"2026-12-02":643.7,"2026-12-06":686.3,"2026-12-09":689.1,"2026-12-03":701.8,"2026-12-07":715.6,"2026-12-29":722.7,"2026-12-28":747.6,"2026-12-04":791.7,"2026-12-24":852.6,"2026-12-31":869.0,"2026-12-18":871.9,"2026-12-27":929.0,"2026-12-30":1011.5,"2026-12-25":1073.2}},{"route":"PEK-SYX","cn":"三亚","board":"dom","minDay":"2026-12-07","min":1494.7,"max":1787.9,"days":{"2026-12-07":1494.7,"2026-12-10":1518.7,"2026-12-03":1523.6,"2026-12-05":1523.6,"2026-12-01":1533.2,"2026-12-13":1559.1,"2026-12-12":1571.0,"2026-12-22":1574.9,"2026-12-19":1575.6,"2026-12-09":1575.6,"2026-12-16":1575.8,"2026-12-27":1585.6,"2026-12-15":1586.0,"2026-12-06":1592.3,"2026-12-14":1594.5,"2026-12-08":1597.2,"2026-12-02":1597.3,"2026-12-29":1610.1,"2026-12-23":1613.4,"2026-12-04":1615.9,"2026-12-17":1618.9,"2026-12-20":1620.0,"2026-12-21":1633.8,"2026-12-11":1638.4,"2026-12-24":1658.6,"2026-12-28":1660.9,"2026-12-26":1671.8,"2026-12-25":1678.1,"2026-12-31":1723.3,"2026-12-30":1726.6,"2026-12-18":1787.9}},{"route":"PEK-LJG","cn":"丽江","board":"dom","minDay":"2026-12-01","min":1050.8,"max":1596.0,"days":{"2026-12-01":1050.8,"2026-12-04":1050.9,"2026-12-24":1053.2,"2026-12-05":1129.4,"2026-12-31":1596.0}},{"route":"PEK-XIY","cn":"西安","board":"dom","minDay":"2026-12-03","min":578.8,"max":772.9,"days":{"2026-12-03":578.8,"2026-12-21":585.6,"2026-12-28":585.6,"2026-12-02":590.6,"2026-12-26":594.7,"2026-12-10":594.7,"2026-12-05":595.7,"2026-12-12":596.1,"2026-12-22":596.1,"2026-12-01":608.9,"2026-12-15":644.8,"2026-12-20":670.8,"2026-12-27":674.0,"2026-12-13":683.6,"2026-12-31":713.8,"2026-12-11":748.1,"2026-12-30":772.9}},{"route":"PEK-KIX","cn":"大阪（关西）","board":"intl","minDay":"2026-12-03","min":1193.6,"max":1730.1,"days":{"2026-12-03":1193.6,"2026-12-02":1272.8,"2026-12-01":1286.0,"2026-12-04":1340.5,"2026-12-21":1357.3,"2026-12-13":1371.5,"2026-12-14":1379.9,"2026-12-15":1379.9,"2026-12-22":1382.8,"2026-12-07":1396.7,"2026-12-05":1410.2,"2026-12-23":1422.5,"2026-12-17":1441.6,"2026-12-06":1441.6,"2026-12-08":1444.3,"2026-12-27":1468.4,"2026-12-20":1472.9,"2026-12-11":1476.2,"2026-12-24":1483.0,"2026-12-12":1497.6,"2026-12-28":1509.5,"2026-12-25":1512.6,"2026-12-26":1518.1,"2026-12-29":1579.8,"2026-12-30":1657.7,"2026-12-31":1730.1}},{"route":"PEK-CNX","cn":"清迈","board":"intl","minDay":"2026-12-16","min":1251.3,"max":1718.9,"days":{"2026-12-16":1251.3,"2026-12-18":1251.3,"2026-12-20":1305.4,"2026-12-21":1305.4,"2026-12-22":1305.9,"2026-12-15":1339.7,"2026-12-04":1340.9,"2026-12-30":1387.0,"2026-12-31":1387.0,"2026-12-17":1406.5,"2026-12-19":1631.9,"2026-12-24":1718.9}},{"route":"PEK-IST","cn":"伊斯坦布尔","board":"intl","minDay":"2026-12-09","min":1933.3,"max":2976.5,"days":{"2026-12-09":1933.3,"2026-12-10":1998.5,"2026-12-25":2013.8,"2026-12-02":2023.5,"2026-12-21":2025.4,"2026-12-12":2049.1,"2026-12-15":2053.4,"2026-12-13":2067.9,"2026-12-24":2069.7,"2026-12-26":2076.9,"2026-12-27":2076.9,"2026-12-29":2076.9,"2026-12-28":2081.2,"2026-12-17":2081.7,"2026-12-08":2083.1,"2026-12-31":2083.4,"2026-12-05":2103.6,"2026-12-03":2156.7,"2026-12-01":2179.6,"2026-12-23":2542.1,"2026-12-30":2976.5}},{"route":"PEK-SIN","cn":"新加坡","board":"intl","minDay":"2026-12-02","min":912.7,"max":2140.6,"days":{"2026-12-02":912.7,"2026-12-06":951.3,"2026-12-08":951.9,"2026-12-09":951.9,"2026-12-04":952.4,"2026-12-05":952.4,"2026-12-03":952.7,"2026-12-07":955.4,"2026-12-01":955.6,"2026-12-10":957.2,"2026-12-17":1069.4,"2026-12-11":1245.9,"2026-12-13":1318.2,"2026-12-23":1360.3,"2026-12-12":1389.3,"2026-12-22":1391.0,"2026-12-25":1420.7,"2026-12-14":1428.6,"2026-12-16":1431.4,"2026-12-21":1437.5,"2026-12-24":1572.1,"2026-12-20":1613.2,"2026-12-18":1637.4,"2026-12-30":1737.2,"2026-12-19":1741.7,"2026-12-28":1761.4,"2026-12-29":1795.8,"2026-12-26":1888.8,"2026-12-27":1944.1,"2026-12-31":2140.6}},{"route":"PEK-DPS","cn":"巴厘岛（登巴萨）","board":"intl","minDay":"2026-12-08","min":1188.5,"max":2071.6,"days":{"2026-12-08":1188.5,"2026-12-03":1191.0,"2026-12-11":1194.6,"2026-12-05":1196.8,"2026-12-02":1197.4,"2026-12-01":1197.5,"2026-12-06":1197.5,"2026-12-09":1197.6,"2026-12-10":1198.3,"2026-12-15":1198.3,"2026-12-16":1198.3,"2026-12-12":1198.3,"2026-12-14":1198.3,"2026-12-13":1219.4,"2026-12-04":1219.7,"2026-12-07":1224.6,"2026-12-17":1225.2,"2026-12-20":1572.7,"2026-12-21":1575.2,"2026-12-23":1576.4,"2026-12-24":1580.1,"2026-12-18":1580.1,"2026-12-22":1580.1,"2026-12-19":1592.4,"2026-12-25":1594.2,"2026-12-26":1963.8,"2026-12-31":2034.0,"2026-12-27":2045.4,"2026-12-28":2056.2,"2026-12-29":2058.4,"2026-12-30":2071.6}}]};
+const CAL_ROUTE_MAP={"haerbin":"PEK-HRB","sanya":"PEK-SYX","lijiang":"PEK-LJG","xian":"PEK-XIY","osaka":"PEK-KIX","chiangmai":"PEK-CNX","istanbul":"PEK-IST","singapore":"PEK-SIN","expired":"PEK-DPS"};
+function calOf(id){return (window.CAL_DATA.calendars.find(function(c){return c.route===CAL_ROUTE_MAP[id];}))||null;}
+/* 价格趋势辅助：仅用 Travelpayouts 缓存价做「相对低价日」参考，不作为绝对订票价 */
+function calMin(r){ const c=calOf(r.id); return c?c.min:null; }
+function calMinDay(r){ const c=calOf(r.id); return c?c.minDay:""; }
+function calMax(r){ const c=calOf(r.id); return c?c.max:null; }
+function calDays(r){ const c=calOf(r.id); return c?c.days:{}; }
+function fmtDay(d){ if(!d) return ""; const p=String(d).split("-"); return `${parseInt(p[1],10)}月${parseInt(p[2],10)}日`; }
+function fmtPrice(v){ return v==null?"—":Number(v).toLocaleString("zh-CN",{maximumFractionDigits:0}); }
+function priceColor(v,lo,hi){
+  if(v==null||hi<=lo) return "#8a93a6";
+  const t=Math.max(0,Math.min(1,(v-lo)/(hi-lo)));
+  return t<.5?mix2("#15a05a","#f2a01d",t*2):mix2("#f2a01d","#e0612f",(t-.5)*2);
+}
+function mix2(a,b,t){
+  const pa=hex2rgb(a), pb=hex2rgb(b);
+  const r=Math.round(pa[0]+(pb[0]-pa[0])*t), g=Math.round(pa[1]+(pb[1]-pa[1])*t), bl=Math.round(pa[2]+(pb[2]-pa[2])*t);
+  return `rgb(${r},${g},${bl})`;
+}
+function hex2rgb(h){ h=h.replace("#",""); return [parseInt(h.slice(0,2),16),parseInt(h.slice(2,4),16),parseInt(h.slice(4,6),16)]; }
+const ROUTES = {
+  dom:[
+    {id:"haerbin", flag:"🏔️", city:"哈尔滨", en:"Harbin", price:680, src:"实时聚合", update:"12 分钟前",
+     leave:0, leaveLabel:"周末可走 · 请假 0 天", fly:"约 2h10m", play:"玩 2 天", stops:"直飞",
+     hot:"冰雪季",
+     dep:"去 07:30 首都T3 → 09:40 太平", ret:"回 18:20 → 20:35",
+     priceNote:"含税往返起价；含 7kg 手提，托运行李另购", seats:"余票充足"},
+    {id:"sanya", flag:"🏝️", city:"三亚", en:"Sanya", price:1080, src:"运营精选", update:"26 分钟前",
+     leave:1, leaveLabel:"请 1 天 · 连休 4 天", fly:"约 4h25m", play:"玩 4 天 3 晚", stops:"直飞",
+     hot:"假期精选",
+     dep:"去 08:10 首都T2 → 12:35 凤凰", ret:"回 16:40 → 20:50",
+     priceNote:"含税往返起价；不含托运行李", seats:"剩余少量座位"},
+    {id:"lijiang", flag:"⛰️", typeTag:"", city:"丽江", en:"Lijiang", price:920, src:"实时聚合", update:"31 分钟前",
+     leave:1, leaveLabel:"请 1 天 · 连休 4 天", fly:"约 4h05m", play:"玩 4 天", stops:"经停 1 次",
+     dep:"去 06:55 → 11:50（经停昆明）", ret:"回 15:30 → 20:40",
+     priceNote:"含税往返起价", seats:"余票充足"},
+    {id:"xian", flag:"🏮", city:"西安", en:"Xi'an", price:560, src:"实时聚合", update:"8 分钟前",
+     leave:0, leaveLabel:"周末可走 · 请假 0 天", fly:"约 2h05m", play:"玩 2 天", stops:"直飞",
+     dep:"去 07:50 → 10:00", ret:"回 19:10 → 21:20",
+     priceNote:"含税往返起价", seats:"余票充足"}
+  ],
+  intl:[
+    {id:"osaka", flag:"🏯", city:"大阪", en:"Osaka, Japan", price:1680, src:"实时聚合", update:"5 分钟前",
+     visa:"eta", visaLabel:"电子签", leave:4, leaveLabel:"请 4 天 · 连休 7 天",
+     fly:"约 3h20m", play:"玩 5 天 4 晚", stops:"直飞", hot:"元旦热卖",
+     dep:"去 01:30 首都T3 → 05:50 关西（当地）", ret:"回 08:30 关西 → 11:10 北京",
+     tz:"日本比北京快 1 小时；返程为当日抵达，不额外占假",
+     priceNote:"含税往返起价；含 7kg 手提，托运另购", seats:"剩余少量座位",
+     visaDetail:{status:"eta", title:"日本电子签（短期旅游）", stay:"单次停留 ≤15 天",
+       docs:["护照有效期 ≥6 个月并有空白页","在线填写申请表 + 证件照","资产/在职证明等使馆要求材料","建议预留 7 个工作日出签"],
+       warn:false, updated:"2026-10-20 核验", source:"日本国驻华大使馆（信息以官方为准）"}},
+    {id:"chiangmai", flag:"🐘", city:"清迈", en:"Chiang Mai, Thailand", price:1320, src:"运营精选", update:"18 分钟前",
+     visa:"free", visaLabel:"免签", leave:4, leaveLabel:"请 4 天 · 连休 7 天",
+     fly:"约 5h15m", play:"玩 5 天 4 晚", stops:"直飞", hot:"假期精选",
+     dep:"去 02:10 大兴 → 06:25 清迈（当地，慢 1h）", ret:"回 07:40 → 13:30 北京",
+     tz:"泰国比北京慢 1 小时；落地为当日清晨，几乎不浪费白天",
+     priceNote:"含税往返起价；不含托运行李", seats:"余票充足",
+     visaDetail:{status:"ok", title:"中泰互免签证", stay:"持普通护照旅游单次 ≤30 天",
+       docs:["护照有效期 ≥6 个月","建议备好返程机票与酒店订单","入境可能查验足额旅行资金"],
+       warn:false, updated:"2026-10-22 核验", source:"泰王国驻华官方公告 / 中国领事服务网"}},
+    {id:"istanbul", flag:"🕌", city:"伊斯坦布尔", en:"Istanbul, Türkiye", price:2980, src:"实时聚合", update:"40 分钟前",
+     visa:"sticker", visaLabel:"需提前办签", leave:6, leaveLabel:"请 5+ 天 · 连休 9 天",
+     fly:"约 10h40m", play:"玩 7 天 6 晚", stops:"直飞",
+     dep:"去 00:50 首都 → 06:30 伊斯坦布尔（当地，慢 5h）", ret:"回 02:00 → 16:30 北京",
+     tz:"土耳其比北京慢 5 小时；航程长，建议 ≥7 天行程",
+     priceNote:"含税往返起价", seats:"余票充足",
+     visaDetail:{status:"sticker", title:"土耳其电子签（提前在线申请）", stay:"以签发停留期为准",
+       docs:["护照有效期 ≥6 个月","中国普通护照在线办土电子签通常需持有效申根/美签等支持性签证，否则须提前办贴纸签","在线申请电子签并缴费","建议预留 ≥10 个工作日"],
+       warn:true, updated:"2026-09-30 核验", source:"土耳其官方电子签平台（出行前请复核）"}},
+    {id:"singapore", flag:"🌆", city:"新加坡", en:"Singapore", price:1760, src:"实时聚合", update:"15 分钟前",
+     visa:"free", visaLabel:"免签", leave:1, leaveLabel:"请 1 天 · 连休 4 天",
+     fly:"约 6h20m", play:"玩 3 天 2 晚", stops:"直飞",
+     dep:"去 00:10 大兴 → 06:30 樟宜（当地，同日）", ret:"回 08:20 → 14:30 北京",
+     tz:"中新无时差；红眼航班，首晚住宿需按前一晚预订",
+     priceNote:"含税往返起价；不含托运", seats:"余票充足",
+     visaDetail:{status:"ok", title:"中新互免签证", stay:"短期旅游 ≤30 天",
+       docs:["护照有效期 ≥6 个月","SGAC 电子入境卡（抵达前 3 天内提交）","返程机票与住宿证明"],
+       warn:false, updated:"2026-10-25 核验", source:"新加坡移民局 ICA / 中国领事服务网"}},
+    {id:"expired", flag:"🌴", city:"巴厘岛", en:"Bali, Indonesia", price:0, expired:true, src:"实时聚合", update:"2 小时前",
+     visa:"voa", visaLabel:"落地签 VOA", leave:4, leaveLabel:"请 4 天 · 连休 7 天",
+     fly:"约 7h30m", play:"玩 5 天", stops:"中转 1 次",
+     dep:"—", ret:"—", tz:"", priceNote:"", seats:"",
+     visaDetail:null}
+  ]
+};
+
+const CHANNELS=[
+  {icon:"🏢",name:"航空公司官网",desc:"直飞承运航司，退改规则最权威",tag:"航司"},
+  {icon:"🧳",name:"携程 / 去哪儿",desc:"价格日历与组合班次更丰富",tag:"OTA"},
+  {icon:"✈️",name:"飞猪旅行",desc:"常有特价与套餐组合",tag:"OTA"},
+  {icon:"🌍",name:"Trip.com",desc:"适合出境线路英文/多语服务",tag:"OTA"}
+];
+
+/* ===================== STATE ===================== */
+let board="dom", currentRoute=null, currentHoliday=0, leaveFilter=2, filterBoard="all";
+function isIntl(r){ return !!ROUTES.intl.find(x=>x.id===r.id); }
+
+/* ===================== RENDER ROUTE LIST ===================== */
+function tagFor(r){
+  if(r.expired) return '<span class="tag red">该价位已售罄</span>';
+  let t=`<span class="tag leave">📅 ${r.leaveLabel}</span>`;
+  if(isIntl(r) && r.visaLabel){
+    const cls = r.visa==="free"?"green":(r.visa==="sticker"?"purple":"blue");
+    t+=`<span class="tag ${cls}">🛂 ${r.visaLabel}</span>`;
+  }
+  return t;
+}
+function routeCard(r){
+  if(r.expired){
+    return `<div class="route-card" style="opacity:.85" data-link="feature-state" role="button" tabindex="0" onclick="openDetail('${r.id}')">
+      <div class="rc-top">
+        <div class="rc-flag">${r.flag}</div>
+        <div class="rc-city"><div class="name">${r.city}</div><div class="en">${r.en}</div></div>
+        <div class="rc-price"><div class="from">实时价</div><div class="val" style="color:var(--ink-3)">已失效</div></div>
+      </div>
+      <div class="rc-tags">${tagFor(r)}</div>
+      <div class="rc-foot"><span class="dur"><span>✈️ ${r.fly}</span><span>🛬 ${r.play}</span></span><span style="color:var(--red)">2 小时前更新 · 点我看替代</span></div>
+    </div>`;
+  }
+  return `<div class="route-card" data-link="feature-detail" role="button" tabindex="0" onclick="openDetail('${r.id}')">
+    ${r.hot?`<div class="hot-ribbon">${r.hot}</div>`:""}
+    <div class="rc-top">
+      <div class="rc-flag">${r.flag}</div>
+      <div class="rc-city"><div class="name">${r.city}</div><div class="en">${r.en} · ${r.stops}</div></div>
+      <div class="rc-price"><div class="from">${calMin(r)!=null?fmtDay(calMinDay(r))+" 最低":"含税往返"}</div><div class="val"><small>¥</small>${calMin(r)!=null?fmtPrice(calMin(r)):r.price}</div></div>
+    </div>
+    <div class="rc-tags">${tagFor(r)}</div>
+    <div class="rc-foot">
+      <span class="dur"><span>✈️ 总飞 ${r.fly}</span><span>🛬 在地 ${r.play}</span></span>
+      <span class="cal-link" onclick="event.stopPropagation();openCalendar('${r.id}')" role="button" tabindex="0">📅 看价格日历 ›</span>
+    </div>
+  </div>`;
+}
+function renderRoutes(list, mountId){
+  document.getElementById(mountId).innerHTML = list.map(routeCard).join("");
+}
+function switchBoard(b){
+  board=b;
+  document.getElementById("boardDom").classList.toggle("active",b==="dom");
+  document.getElementById("boardIntl").classList.toggle("active",b==="intl");
+  renderRoutes(ROUTES[b],"routeList");
+}
+
+/* ===================== PRICE CALENDAR ===================== */
+function openCalendar(id){
+  const r = ROUTES.dom.find(x=>x.id===id) || ROUTES.intl.find(x=>x.id===id);
+  if(!r) return;
+  if(board!==(isIntl(r)?"intl":"dom")) switchBoard(isIntl(r)?"intl":"dom");
+  currentRoute=r;
+  renderCalendar(r);
+  go("calendar");
+}
+function renderCalendar(r){
+  const c=calOf(r.id);
+  const body=document.getElementById("calendarBody");
+  document.getElementById("calRouteName").textContent=`${r.flag} ${r.city} · 价格日历`;
+  if(!c){
+    body.innerHTML=`<div class="state" style="padding:30px 16px"><div class="si">📅</div><h3>暂无该航线价格日历</h3><p>该航线暂未接入价格趋势数据，请前往渠道查看实时票价。</p>
+      <button class="btn btn-primary" style="margin-top:14px" onclick="openSheet('sheetRedirect')">去渠道查实时价 ›</button></div>`;
+    document.getElementById("calCtaPrice").innerHTML="—";
+    return;
+  }
+  const days=c.days, mn=c.min, md=c.minDay, mx=c.max, month=window.CAL_DATA.month, gen=window.CAL_DATA.gen;
+  const [yy,mm]=month.split("-").map(Number);
+  const firstDow=new Date(yy,mm-1,1).getDay();
+  const lead=(firstDow+6)%7;
+  const daysInMonth=new Date(yy,mm,0).getDate();
+  const dows=["一","二","三","四","五","六","日"];
+  let html=`<div class="cal-summary">
+      <div class="cs-item"><div class="cs-k">当月最低</div><div class="cs-v" style="color:var(--green)">¥${fmtPrice(mn)}</div><div class="cs-sub">${fmtDay(md)}</div></div>
+      <div class="cs-item"><div class="cs-k">当月最高</div><div class="cs-v" style="color:var(--red)">¥${fmtPrice(mx)}</div><div class="cs-sub">仅供对比</div></div>
+      <div class="cs-item"><div class="cs-k">覆盖天数</div><div class="cs-v">${Object.keys(days).length}</div><div class="cs-sub">/ ${daysInMonth} 天</div></div>
+    </div>
+    <div class="cal-legend" style="margin:0 16px 4px"><span class="lg-dot" style="background:#15a05a"></span>相对低价　<span class="lg-dot" style="background:#f2a01d"></span>中间　<span class="lg-dot" style="background:#e0612f"></span>相对较高　<span class="lg-dot" style="background:#eef0f4"></span>无数据</div>
+    <div class="cal-month">${yy} 年 ${mm} 月</div>
+    <div class="cal-grid" style="margin:0 16px">`;
+  html+=dows.map(d=>`<div class="cal-dow">${d}</div>`).join("");
+  for(let i=0;i<lead;i++) html+=`<div class="cal-pcell empty"></div>`;
+  for(let d=1;d<=daysInMonth;d++){
+    const key=`${yy}-${String(mm).padStart(2,"0")}-${String(d).padStart(2,"0")}`;
+    const v=days[key];
+    const isMin=key===md;
+    if(v==null){
+      html+=`<div class="cal-pcell nodata"><div class="cp-d">${d}</div><div class="cp-p">—</div></div>`;
+    } else {
+      const col=priceColor(v,mn,mx);
+      html+=`<div class="cal-pcell${isMin?" ismin":""}" style="background:${col}22;color:${col}" role="button" tabindex="0" onclick="pickCalDay('${r.id}','${key}')">
+        <div class="cp-d">${d}</div><div class="cp-p">¥${fmtPrice(v)}</div>${isMin?`<div class="cp-badge">最低</div>`:""}</div>`;
+    }
+  }
+  html+=`</div>
+    <div class="callout info" style="margin:16px 16px 0">📡 数据来源：Travelpayouts 历史缓存价（生成于 ${gen?gen.slice(0,10):"近期"}），<b>仅用于判断「哪天相对便宜」，不代表可下单的实时票价</b>。色块按当月最低/最高价线性映射；点击某一天可前往 OTA 查询该日实时价，以下单页为准。</div>`;
+  body.innerHTML=html;
+  document.getElementById("calCtaPrice").innerHTML=`<small style="font-size:11px">¥</small>${fmtPrice(mn)}<small style="font-size:11px"> 起</small>`;
+}
+function pickCalDay(rid,key){
+  const r=ROUTES.dom.find(x=>x.id===rid)||ROUTES.intl.find(x=>x.id===rid);
+  const v=calDays(r)[key];
+  showToast(`${fmtDay(key)} 参考价 ¥${fmtPrice(v)} · 打开渠道查实时价`);
+  openSheet("sheetRedirect");
+}
+function calTrendHtml(r){
+  const c=calOf(r.id);
+  if(!c){
+    return `<div class="kv"><span class="k">价格参考</span><span class="v" style="font-weight:500;font-size:12px">${r.priceNote||"含税往返起价"}</span></div>
+      <div class="kv"><span class="k">参考价</span><span class="v">¥${r.price}</span></div>
+      <div class="doc-note">该航线暂未接入价格趋势数据，以上为示意参考价，实时价以 OTA 下单页为准。</div>`;
+  }
+  const mn=c.min, md=c.minDay, mx=c.max, days=c.days;
+  const sorted=Object.entries(days).sort((a,b)=>a[1]-b[1]).slice(0,3);
+  const rows=sorted.map(([k,v],i)=>`<div class="kv"><span class="k">${i===0?"🏆":"　"} ${fmtDay(k)}</span><span class="v" style="color:${i===0?"var(--green)":"var(--ink)"}">¥${fmtPrice(v)}</span></div>`).join("");
+  return `<div class="kv"><span class="k">当月最低</span><span class="v" style="color:var(--green);font-weight:700">¥${fmtPrice(mn)}（${fmtDay(md)}）</span></div>
+    <div class="kv"><span class="k">当月最高</span><span class="v" style="color:var(--ink-3)">¥${fmtPrice(mx)}（仅供对比）</span></div>
+    ${rows}
+    <div class="doc-note">📡 数据来源：Travelpayouts 历史缓存价，<b>仅用于判断「哪天相对便宜」，非可下单实时票价</b>。排序按当月最低价升序；每日实际价格以跳转后的 OTA 下单页为准。</div>`;
+}
+
+/* ===================== DETAIL ===================== */
+function openDetail(id){
+  const r = ROUTES.dom.find(x=>x.id===id) || ROUTES.intl.find(x=>x.id===id);
+  if(!r) return;
+  if(board!==(isIntl(r)?"intl":"dom")) switchBoard(isIntl(r)?"intl":"dom");
+  currentRoute=r;
+  document.getElementById("ctaBar").style.display="flex";
+  if(r.expired){ renderExpired(r); go("detail"); return; }
+
+  const visaPanel = (isIntl(r) && r.visaDetail) ? `
+    <div class="panel" data-link="feature-doc">
+      <h4><span class="pi">🛂</span>入境证件要求</h4>
+      <div class="visa-status ${r.visaDetail.status==="ok"?"ok":"eta"}">
+        <span class="visa-stamp">${r.visaDetail.status==="ok"?"✅":(r.visaDetail.status==="sticker"?"📝":"🪪")}</span>
+        <div><div>${r.visaDetail.title}</div><div style="font-size:11.5px;font-weight:500;color:inherit;opacity:.85">${r.visaDetail.stay} · 默认：持中国普通护照 / 北京出境 / 旅游</div></div>
+      </div>
+      ${r.visaDetail.warn?`<div class="callout warn" style="margin:10px 0 0">⏳ 距出行约 64 天，该类型建议预留 ≥10 个工作日，<b>请尽快开始办理</b>。</div>`
+        :`<div class="callout info" style="margin:10px 0 0">🕑 距出行约 64 天，办理时间充足（建议预留 ${r.visaLabel==="免签"?"无需办理":"7 个工作日"}）。</div>`}
+      <ul class="doc-list">${r.visaDetail.docs.map(d=>`<li>${d}</li>`).join("")}</ul>
+      <div class="doc-note">🔎 ${r.visaDetail.updated} · 来源：${r.visaDetail.source}<br>政策可能变更，不构成过签承诺，出行前请以官方/使领馆信息为准。</div>
+    </div>` : "";
+
+  document.getElementById("detailBody").innerHTML=`
+    <div class="detail-hero">
+      <div class="dh-row"><button class="back-btn" onclick="go('home')" aria-label="返回">‹</button><span style="font-size:12px;opacity:.9">📅 价格趋势参考 · 实时价以 OTA 为准</span></div>
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;padding:0 16px">
+        <div class="dh-city"><div class="en">${r.en}</div><div class="name">${r.flag} ${r.city}</div></div>
+        <div class="dh-price"><div class="v">${calMin(r)!=null?`<small>¥</small>${fmtPrice(calMin(r))}`:`<small>¥</small>${r.price}`}<small style="font-size:12px"> 起</small></div><div class="l">${calMin(r)!=null?fmtDay(calMinDay(r))+" 当月最低 · 趋势参考":"含税往返"}</div></div>
+      </div>
+    </div>
+
+    <div class="panel" data-link="feature-holiday">
+      <h4><span class="pi">📅</span>拼假建议</h4>
+      <div class="kv"><span class="k">建议请假</span><span class="v" style="color:var(--orange)">${r.leaveLabel}</span></div>
+      <div class="kv"><span class="k">适配假期</span><span class="v">2027 元旦方案</span></div>
+      <div class="kv"><span class="k">在地游玩</span><span class="v">${r.play}</span></div>
+    </div>
+
+    <div class="panel" data-link="feature-time">
+      <h4><span class="pi">⏱️</span>行程时间（预估）</h4>
+      <div class="timeline">
+        <div class="tl"><div class="tl-t">去程 · ${r.dep}</div><div class="tl-d">${r.stops}</div></div>
+        <div class="tl"><div class="tl-t">返程 · ${r.ret}</div><div class="tl-d">总飞行 ${r.fly}</div></div>
+      </div>
+      <div class="kv" style="margin-top:6px"><span class="k">预估总飞行时间</span><span class="v">${r.fly}</span></div>
+      <div class="kv"><span class="k">在地游玩时间</span><span class="v">${r.play}</span></div>
+      ${r.tz?`<div class="doc-note">🌐 ${r.tz}</div>`:""}
+      <div class="doc-note">时间基于计划班期估算，以实际航班时刻为准。</div>
+    </div>
+
+    ${visaPanel}
+
+    <div class="panel" data-link="feature-detail">
+      <h4><span class="pi">📅</span>价格日历趋势</h4>
+      ${calTrendHtml(r)}
+      <button class="btn btn-ghost" style="margin-top:10px" onclick="openCalendar('${r.id}')">查看完整价格日历 ›</button>
+    </div>
+  `;
+  document.getElementById("ctaPrice").innerHTML= calMin(r)!=null
+    ? `<small style="font-size:11px">¥</small>${fmtPrice(calMin(r))}<small style="font-size:11px"> 起</small>`
+    : `¥${r.price}<small style="font-size:11px"> 起</small>`;
+  go("detail");
+}
+
+function renderExpired(r){
+  document.getElementById("ctaBar").style.display="none";
+  document.getElementById("detailBody").innerHTML=`
+    <div class="detail-hero"><div class="dh-row"><button class="back-btn" onclick="go('home')">‹</button></div>
+      <div style="padding:6px 16px 4px"><div class="en">${r.en}</div><div class="name">${r.flag} ${r.city}</div></div></div>
+    <div class="state">
+      <div class="si">😴</div>
+      <h3>这个低价刚被抢光了</h3>
+      <p>¥1,320 价位的舱位已无库存（2 小时前更新）。低价票时效很短，看看下面的替代选择。</p>
+      <button class="btn btn-primary" style="margin-bottom:9px" onclick="switchBoard('intl');go('home')">查看同板块其他低价</button>
+      <button class="btn btn-ghost" onclick="showToast('已为你订阅该目的地降价提醒（P1 示意）')">降价时提醒我</button>
+    </div>`;
+  document.getElementById("ctaPrice").innerHTML="—";
+}
+
+/* ===================== HOLIDAY ===================== */
+function renderHolidayChips(){
+  document.getElementById("holidayChips").innerHTML = HOLIDAYS.map((h,i)=>
+    `<button class="chip ${i===currentHoliday?"active":""}" onclick="pickHoliday(${i})">${h.name}</button>`).join("");
+}
+function pickHoliday(i){
+  currentHoliday=i; renderHolidayChips(); renderHoliday();
+}
+function renderHoliday(){
+  const h=HOLIDAYS[currentHoliday];
+  const body=document.getElementById("holidayBody");
+  if(h.pending){
+    document.getElementById("calTitle").textContent=h.month;
+    document.getElementById("calGrid").innerHTML="";
+    document.getElementById("planBox").innerHTML=`<div class="state" style="padding:24px 8px"><div class="si">🗓️</div><h3>${h.name}安排待官方公布</h3><p>国务院办公厅发布放假安排后将更新拼假方案，当前不提供具体日期。</p></div>`;
+    document.getElementById("holidayRoutes").innerHTML="";
+    return;
+  }
+  document.getElementById("calTitle").textContent=h.month;
+  // Build Dec28(Mon)..Jan3(Sun) calendar strip rendered as Jan with 4 prev days
+  const days=[
+    {d:28,m:12,cls:"needleave",cn:"请假"},{d:29,m:12,cls:"needleave",cn:"请假"},{d:30,m:12,cls:"needleave",cn:"请假"},{d:31,m:12,cls:"needleave",cn:"请假"},
+    {d:1,m:1,cls:"holiday",cn:"元旦"},{d:2,m:1,cls:"holiday",cn:"放假"},{d:3,m:1,cls:"holiday",cn:"放假"}
+  ];
+  const dows=["一","二","三","四","五","六","日"];
+  let html=dows.map(x=>`<div class="dow">${x}</div>`).join("");
+  html+=days.map(d=>`<div class="cal-cell ${d.cls}">${d.d}<div class="cn">${d.cn}</div></div>`).join("");
+  document.getElementById("calGrid").innerHTML=html;
+
+  document.getElementById("planBox").innerHTML = h.plans.map((p,i)=>`
+    <div class="opt ${i===0?"sel":""}" style="cursor:default">
+      <div class="oi">${i===0?"⭐":(p.leave===0?"🛋️":"📌")}</div>
+      <div class="ot"><div class="n">${p.name}</div><div class="d">请假：${p.ask} → 连休 ${p.range}</div>
+        <div style="font-size:11.5px;color:var(--ink-2);margin-top:3px">${p.fit}</div></div>
+      <div style="text-align:right;flex:0 0 auto"><div style="font-size:18px;font-weight:800;color:var(--orange)">${p.leave}<small style="font-size:10px">天</small></div><div style="font-size:10px;color:var(--ink-3)">请${p.leave}休${p.total}</div></div>
+    </div>`).join("");
+
+  // routes feasible for the recommended plan (leave=4): intl/dom with leave<=4
+  const rec=h.plans[0];
+  const fit=[...ROUTES.intl.filter(r=>!r.expired && r.leave<=rec.leave), ...ROUTES.dom.filter(r=>r.leave<=rec.leave)]
+            .sort((a,b)=>(calMin(a)??a.price)-(calMin(b)??b.price)).slice(0,3);
+  document.getElementById("holidayRoutes").innerHTML = fit.map(routeCard).join("");
+}
+
+/* ===================== SEARCH / FILTER ===================== */
+function pickLeave(el,n){
+  [...el.parentNode.children].forEach(c=>c.classList.remove("active"));
+  el.classList.add("active"); leaveFilter=n;
+}
+function setFilterBoard(b,btn){
+  filterBoard=b;
+  [...btn.parentNode.children].forEach(c=>c.classList.remove("active"));
+  btn.classList.add("active");
+}
+function applySearch(){
+  closeSheet("sheetSearch");
+  const max = leaveFilter==null?1:leaveFilter;
+  const src = filterBoard==="dom"?ROUTES.dom : filterBoard==="intl"?ROUTES.intl : [...ROUTES.dom,...ROUTES.intl];
+  const pool=src.filter(r=>!r.expired && r.leave<=max);
+  if(filterBoard!=="all") board=filterBoard;
+  const boardName=filterBoard==="intl"?"境外":filterBoard==="dom"?"国内":"全板块";
+  const titleMap={0:`${boardName} · 不请假（纯周末/法定假）`,2:`${boardName} · 请假 1–2 天`,4:`${boardName} · 请假 3–4 天`,99:`${boardName} · 请假 5 天以上`};
+  document.getElementById("resultTitle").textContent = titleMap[max]||"筛选结果";
+  const body=document.getElementById("resultBody");
+  if(pool.length===0){
+    body.innerHTML=`<div class="state"><div class="si">🧐</div><h3>「${boardName}」在不请假的周末暂时没有低价线路</h3>
+      <p>境外目的地通常至少需要请 1 天并搭配航班。你可以放宽请假天数，或切到国内看周末短途。</p>
+      <button class="btn btn-primary" onclick="openSheet('sheetSearch')">调整筛选条件</button>
+      <button class="btn btn-ghost" style="margin-top:9px" onclick="switchBoard('${board==='intl'?'intl':'dom'}');go('home')">先看全部低价榜</button></div>`;
+  }else{
+    body.innerHTML=`<div style="font-size:12px;color:var(--ink-3);margin:2px 2px 10px">共 ${pool.length} 条匹配 · 已按含税价排序，筛选条件已保留</div>`
+      + pool.map(routeCard).join("");
+  }
+  go("result");
+}
+
+/* ===================== REDIRECT ===================== */
+function openRedirect(){ openSheet("sheetRedirect"); }
+function renderChannels(){
+  document.getElementById("channelList").innerHTML = CHANNELS.map((c,i)=>`
+    <div class="opt" role="button" tabindex="0" onclick="jumpChannel('${c.name}')">
+      <div class="oi">${c.icon}</div>
+      <div class="ot"><div class="n">${c.name}</div><div class="d">${c.desc}</div></div>
+      <span class="tag blue">${c.tag}</span>
+    </div>`).join("");
+}
+function jumpChannel(name){
+  closeSheet("sheetRedirect");
+  showToast(`已新开「${name}」携带目的地/日期跳转（原型模拟，不离开本页）`);
+}
+
+/* ===================== SHEETS / TOAST / NAV ===================== */
+function openSheet(id){ document.getElementById(id).classList.add("show"); }
+function closeSheet(id){ document.getElementById(id).classList.remove("show"); }
+document.querySelectorAll(".sheet-mask").forEach(m=>m.addEventListener("click",e=>{if(e.target===m)m.classList.remove("show");}));
+let toastTimer;
+function showToast(msg){
+  const t=document.getElementById("toast"); t.textContent=msg; t.classList.add("show");
+  clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.classList.remove("show"),2200);
+}
+const screens=["home","holiday","detail","calendar","result","map","visa"];
+function go(name){
+  screens.forEach(s=>{
+    const el=document.querySelector(`[data-screen="${s}"]`);
+    if(s===name){el.style.display="flex";} else {el.style.display="none";}
+  });
+  document.getElementById("tbHome").classList.toggle("active",name==="home");
+  document.getElementById("tbHoliday").classList.toggle("active",name==="holiday");
+  if(name==="home") setViewToggle("list");
+  document.querySelector(".phone-screen").scrollTop=0;
+  const body=document.querySelector(`[data-screen="${name}"] .screen-body`);
+  if(body) body.scrollTop=0;
+}
+
+/* ===================== MAP MODE (F-09) ===================== */
+/* 原型为风格化示意图（非测绘图）；坐标按各视野内线性投影手工标注。
+   正式版改为合规底图（高德/腾讯 JS API，GCJ-02，含审图号），由引擎投影换算像素。 */
+let mapLayer="price", mapSel=null, mapBudget=2;
+const W=360,H=460;
+/* 世界视野投影: x=(lng+10)/190*360  y=(60-lat)/75*460 */
+const WORLD={
+  origin:{x:239,y:123},
+  rings:[{r:55,t:"约3h 日本"},{r:130,t:"约6h 东南亚"},{r:230,t:"10h+ 中东/欧洲"}],
+  land:["M2,104 L15,68 L38,10 L34,30 L52,18 L82,14 L130,8 L170,6 L246,6 L300,10 L338,14 L350,22 L344,44 L322,31 L314,60 L292,80 L288,110 L288,140 L280,148 L262,142 L254,158 L250,178 L246,200 L235,233 L228,258 L224,282 L220,312 L216,340 L216,360 L208,366 L200,360 L198,340 L202,318 L202,296 L194,282 L186,272 L178,262 L166,268 L172,290 L166,317 L157,292 L150,264 L146,236 L132,224 L127,215 L118,240 L110,282 L96,276 L90,250 L83,224 L83,196 L87,170 L87,147 L74,134 L61,135 L56,124 L44,110 Z",
+        "M280,150 C294,146 304,158 302,174 C300,192 288,202 278,196 C270,188 272,160 280,150 Z",       /* 日本 */
+        "M247,222 C253,220 257,228 255,236 C252,241 247,238 246,231 Z",                          /* 台湾 */
+        "M242,258 C252,254 258,268 254,282 C248,292 240,286 239,272 Z",                          /* 菲律宾 */
+        "M198,372 C210,368 224,372 228,382 C224,394 208,398 198,390 C192,382 193,375 198,372 Z",  /* 苏门答腊 */
+        "M218,404 C228,402 242,408 244,416 C240,424 226,424 216,418 C210,412 212,406 218,404 Z",  /* 爪哇/巴厘 */
+        "M228,352 C238,348 246,356 243,368 C236,376 226,372 225,362 Z",                          /* 婆罗洲 */
+        "M165,318 C170,316 174,320 173,326 C170,331 165,329 163,324 Z",                          /* 斯里兰卡 */
+        "M96,276 C108,286 116,300 112,316 L96,316 L86,296 Z"],                                  /* 阿拉伯半岛/非洲一角(示意) */
+  pins:{
+    osaka:{x:276,y:155,city:"大阪"}, chiangmai:{x:207,y:253,city:"清迈"},
+    istanbul:{x:74,y:117,city:"伊斯坦布尔"}, singapore:{x:216,y:360,city:"新加坡"},
+    expired:{x:237,y:424,city:"巴厘岛"}
+  }
+};
+/* 中国视野投影: x=(lng-73)/62*360  y=(54-lat)/37*460 */
+const CHINA={
+  origin:{x:252,y:175},
+  rings:[{r:95,t:"约2h 短程"},{r:235,t:"约5h 远程"}],
+  land:["M290,6 L354,71 L334,143 L312,150 L296,158 L284,186 L275,224 L284,286 L277,323 L261,367 L235,388 L216,408 L203,404 L186,386 L165,409 L145,372 L110,337 L70,323 L58,276 L48,226 L6,186 L9,168 L28,150 L41,112 L56,86 L87,68 L139,58 L200,52 L258,56 Z",
+        "M202,424 C212,418 224,422 226,436 C223,450 208,452 200,442 C195,433 196,427 202,424 Z",   /* 海南岛 */
+        "M275,363 C281,362 284,370 282,380 C279,387 274,384 273,375 Z"],                          /* 台湾岛（同色） */
+  pins:{
+    haerbin:{x:311,y:102,city:"哈尔滨"}, sanya:{x:212,y:436,city:"三亚"},
+    lijiang:{x:158,y:337,city:"丽江"}, xian:{x:208,y:245,city:"西安"}
+  }
+};
+const PRICE_RANGE={dom:[532,1495],intl:[913,1933]};
+function mix(c1,c2,t){
+  const a=parseInt(c1.slice(1),16),b=parseInt(c2.slice(1),16);
+  const r=Math.round(((a>>16)&255)*(1-t)+((b>>16)&255)*t);
+  const g=Math.round(((a>>8)&255)*(1-t)+((b>>8)&255)*t);
+  const bl=Math.round((a&255)*(1-t)+(b&255)*t);
+  return `#${((1<<24)+(r<<16)+(g<<8)+bl).toString(16).slice(1)}`;
+}
+function pinColor(r){
+  if(r.expired) return "#b9c0cd";
+  if(mapLayer==="visa"){
+    if(!isIntl(r)) return "#9aa6bd";
+    return r.visa==="free"?"#15a05a":(r.visa==="sticker"?"#7a5af8":"#1f6fff");
+  }
+  if(mapLayer==="leave"){
+    return r.leave<=mapBudget ? "#1f6fff" : "#c6ccda";
+  }
+  const [lo,hi]=PRICE_RANGE[board];
+  const val=calMin(r)??r.price;
+  const t=Math.max(0,Math.min(1,(val-lo)/(hi-lo)));
+  return t<.5?mix("#15a05a","#f2a01d",t*2):mix("#f2a01d","#e0612f",(t-.5)*2);
+}
+function pinFeasible(r){
+  return !r.expired && (mapLayer!=="leave" || r.leave<=mapBudget);
+}
+function renderMap(){
+  const view=board==="intl"?WORLD:CHINA;
+  const routes=ROUTES[board];
+  /* 经纬网格 */
+  let grid="";
+  for(let i=1;i<4;i++){ grid+=`<line class="gridline" x1="${W*i/4}" y1="0" x2="${W*i/4}" y2="${H}"/>`;
+    grid+=`<line class="gridline" x1="0" y1="${H*i/4}" x2="${W}" y2="${H*i/4}"/>`; }
+  const lands=view.land.map(d=>`<path class="land" d="${d}"/>`).join("");
+  const rings=view.rings.map(r=>`<circle class="ring" cx="${view.origin.x}" cy="${view.origin.y}" r="${r.r}"/><text class="ring-label" x="${view.origin.x+r.r-26}" y="${view.origin.y-r.r+10}">✈ ${r.t}</text>`).join("");
+  const pins=routes.map(r=>{
+    const p=view.pins[r.id]; if(!p) return "";
+    const feas=pinFeasible(r), c=pinColor(r);
+    const rad=r.expired?9:(feas?13:10), sel=mapSel===r.id?"sel":"";
+    const op=feas?1:.55;
+    const label=r.expired?"失效":"¥"+fmtPrice(calMin(r)??r.price);
+    return `<g class="route-pin ${sel}" opacity="${op}" onclick="selectPin('${r.id}')">
+      <circle class="halo" cx="${p.x}" cy="${p.y}" r="${rad+7}"/>
+      <circle class="core" cx="${p.x}" cy="${p.y}" r="${rad}" fill="${c}"/>
+      <text class="pin-label" x="${p.x}" y="${p.y+3}">${label}</text>
+      <text class="pin-city ${feas?"":"dim"}" x="${p.x}" y="${p.y+rad+11}">${p.city}</text>
+    </g>`;
+  }).join("");
+  document.getElementById("mapSvg").innerHTML=
+    grid+lands+rings+
+    `<circle class="origin-dot" cx="${view.origin.x}" cy="${view.origin.y}" r="4.5"/>
+     <text class="origin-label" x="${view.origin.x+7}" y="${view.origin.y+3}">★ 北京</text>`+pins;
+
+  document.getElementById("mapBoardName").textContent=board==="intl"?"境外 · 世界视野":"国内 · 中国视野";
+  document.getElementById("mapLeaveChips").style.display=mapLayer==="leave"?"flex":"none";
+  renderMapLegend();
+  renderMapLeaveChips();
+  renderMapCard();
+}
+function renderMapLegend(){
+  let html="";
+  if(mapLayer==="price"){
+    html=`<b>💰 趋势参考最低价（同板块相对）</b><br>
+      <span class="lg-dot" style="background:#15a05a"></span>更便宜 · 捡漏<br>
+      <span class="lg-dot" style="background:#f2a01d"></span>中间价位<br>
+      <span class="lg-dot" style="background:#e0612f"></span>相对较高`;
+  }else if(mapLayer==="visa"){
+    html= board==="intl"
+      ? `<b>🛂 入境门槛</b><br><span class="lg-dot" style="background:#15a05a"></span>免签<br><span class="lg-dot" style="background:#1f6fff"></span>电子签/落地签<br><span class="lg-dot" style="background:#7a5af8"></span>需提前办签`
+      : `<b>🛂 国内出行</b><br><span class="lg-dot" style="background:#9aa6bd"></span>无需签证，身份证即可`;
+  }else{
+    html=`<b>📅 最多请 ${labelBudget(mapBudget)}</b><br>
+      <span class="lg-dot" style="background:#1f6fff"></span>请假预算内可去<br>
+      <span class="lg-dot" style="background:#c6ccda"></span>需要更多年假`;
+  }
+  html+=`<br><span style="color:#d83a3a">★</span> 北京出发　虚线=飞行时间圈`;
+  document.getElementById("mapLegend").innerHTML=html;
+}
+function labelBudget(v){ return {0:"0 天",2:"1–2 天",4:"3–4 天",99:"5 天以上"}[v]||""; }
+function renderMapLeaveChips(){
+  const vals=[0,2,4,99];
+  document.getElementById("mapLeaveChips").innerHTML=vals.map(v=>
+    `<button class="chip ${mapBudget===v?"active":""}" onclick="setMapBudget(${v},this)">${labelBudget(v)}</button>`).join("");
+}
+function setMapBudget(v,btn){
+  mapBudget=v; leaveFilter=v;
+  [...btn.parentNode.children].forEach(c=>c.classList.remove("active"));
+  btn.classList.add("active"); mapSel=null; renderMap();
+}
+function renderMapCard(){
+  const el=document.getElementById("mapCard");
+  const hint=document.getElementById("mapHint");
+  const lg=document.getElementById("mapLegend"), dc=document.getElementById("mapDisclaimer");
+  if(!mapSel){ el.innerHTML=""; hint.textContent="点击地图上的价格气泡，查看请假 / 时间 / 证件摘要"; if(lg)lg.style.display=""; if(dc)dc.style.display=""; return; }
+  const r=ROUTES.dom.find(x=>x.id===mapSel)||ROUTES.intl.find(x=>x.id===mapSel);
+  hint.textContent=""; if(lg)lg.style.display="none"; if(dc)dc.style.display="none";
+  if(r.expired){
+    el.innerHTML=`<div class="map-minicard">
+      <div class="mmc-top"><div class="rc-flag" style="width:34px;height:34px;font-size:18px">${r.flag}</div>
+        <div style="flex:1"><b>${r.city}</b> <span class="muted" style="font-size:11px">${r.en}</span>
+          <div style="font-size:12px;color:var(--red);font-weight:600">该低价已售罄 · 2 小时前更新</div></div></div>
+      <button class="btn btn-ghost mmc-go" onclick="openDetail('${r.id}')">查看失效详情与替代线路</button></div>`;
+    return;
+  }
+  el.innerHTML=`<div class="map-minicard">
+    <div class="mmc-top">
+      <div class="rc-flag" style="width:34px;height:34px;font-size:18px">${r.flag}</div>
+      <div style="flex:1;min-width:0">
+        <b>${r.city}</b> <span class="muted" style="font-size:11px">${r.en}</span>
+        <div class="rc-tags" style="margin-top:5px">
+          <span class="tag leave">📅 ${r.leaveLabel}</span>
+          ${isIntl(r)?`<span class="tag ${r.visa==="free"?"green":(r.visa==="sticker"?"purple":"blue")}">🛂 ${r.visaLabel}</span>`:""}
+        </div>
+      </div>
+      <div class="rc-price"><div class="from">${calMin(r)!=null?fmtDay(calMinDay(r))+" 最低":"含税往返"}</div><div class="val"><small>¥</small>${calMin(r)!=null?fmtPrice(calMin(r)):r.price}</div></div>
+    </div>
+    <div style="display:flex;gap:14px;font-size:12px;color:var(--ink-2);margin-top:9px">
+      <span>✈️ 总飞 ${r.fly}</span><span>🛬 在地 ${r.play}</span><span>🔄 ${r.stops}</span></div>
+    <button class="btn btn-primary mmc-go" onclick="openDetail('${r.id}')">查看完整详情</button>
+  </div>`;
+}
+function selectPin(id){ mapSel=(mapSel===id)?null:id; renderMap(); }
+function openMap(){ renderMap(); go("map"); setViewToggle("map"); }
+function openList(){ go("home"); setViewToggle("list"); }
+function setViewToggle(v){
+  document.getElementById("viewList").classList.toggle("active",v==="list");
+  document.getElementById("viewMap").classList.toggle("active",v==="map");
+}
+function setMapBoard(b,btn){
+  board=b; switchBoard(b); mapSel=null;
+  [...btn.parentNode.children].forEach(c=>c.classList.remove("active"));
+  btn.classList.add("active"); renderMap();
+}
+function setMapLayer(l,btn){
+  mapLayer=l; mapSel=null;
+  [...btn.parentNode.children].forEach(c=>c.classList.remove("active"));
+  btn.classList.add("active"); renderMap();
+}
+
+/* ===================== VISA DIRECTORY (F-10) ===================== */
+/* 类型枚举与 F-04 证件类型表、F-09 签证图层共用同一口径，本页只做分组导航。 */
+const VISA_TYPES=[
+  {k:"free",   icon:"✅", name:"免签",        short:"免签",   color:"#15a05a", tag:"green",
+   def:"短期旅游无需提前办签，抵达即可入境", fallback:"以免签入境章准许停留期为准"},
+  {k:"voa",    icon:"🛬", name:"落地签",      short:"落地签", color:"#1f6fff", tag:"blue",
+   def:"抵达口岸办理，部分支持 e-VOA 提前在线办", fallback:"单次停留 ≤30 天，可延期 1 次"},
+  {k:"eta",    icon:"🪪", name:"电子签 / eTA", short:"电子签", color:"#1f6fff", tag:"blue",
+   def:"出行前在线申请，出签后再出行", fallback:"以签发停留期为准"},
+  {k:"sticker",icon:"📝", name:"需提前办签",  short:"提前办签",color:"#7a5af8", tag:"purple",
+   def:"提前送签 / 贴纸签，或有前置条件的电子签", fallback:"以签发停留期为准"}
+];
+let visaFilter="all";
+function visaRoutes(k){ return ROUTES.intl.filter(r=>r.visa===k); }
+function visaStay(r,t){ return (r.visaDetail && r.visaDetail.stay) ? r.visaDetail.stay : t.fallback; }
+
+function renderVisaEntry(){
+  document.getElementById("visaEntryGrid").innerHTML = VISA_TYPES.map(t=>
+    `<div class="ve-cell"><div class="ve-name">${t.icon} ${t.short}</div>
+       <div class="ve-num">${visaRoutes(t.k).length}<small> 个目的地</small></div></div>`
+  ).join("");
+}
+function renderVisaChips(){
+  const items=[{k:"all",icon:"",name:"全部",n:ROUTES.intl.length}]
+    .concat(VISA_TYPES.map(t=>({k:t.k,icon:t.icon,name:t.name,n:visaRoutes(t.k).length})));
+  document.getElementById("visaChips").innerHTML = items.map(c=>
+    `<button class="chip ${visaFilter===c.k?"active":""}" onclick="setVisaFilter('${c.k}')">${c.icon?c.icon+" ":""}${c.name} ${c.n}</button>`
+  ).join("");
+}
+function visaRow(r,t){
+  const price = r.expired
+    ? `<div class="vr-price dead">该低价已失效</div>`
+    : `<div class="vr-price"><small>¥</small>${calMin(r)!=null?fmtPrice(calMin(r)):r.price}</div>`;
+  const updated = (r.visaDetail && r.visaDetail.updated) ? ` · ${r.visaDetail.updated}` : "";
+  return `<div class="visa-row" data-link="${r.expired?"feature-state":"feature-detail"}" role="button" tabindex="0" onclick="openDetail('${r.id}')">
+    <div class="rc-flag">${r.flag}</div>
+    <div class="vr-main">
+      <div class="vr-city"><b>${r.city}</b><span class="en">${r.en}</span></div>
+      <div class="vr-sub">${visaStay(r,t)}${updated}</div>
+    </div>
+    <div class="vr-right">${price}<span class="tag ${t.tag}">${t.name}</span></div>
+    <span class="vr-chev">›</span>
+  </div>`;
+}
+function renderVisaList(){
+  const types = visaFilter==="all" ? VISA_TYPES : VISA_TYPES.filter(t=>t.k===visaFilter);
+  let html="";
+  types.forEach(t=>{
+    const rs=visaRoutes(t.k);
+    if(!rs.length) return;
+    html += `<div class="visa-group" data-link="feature-visa">
+      <div class="visa-group-h">
+        <span class="vgh-dot" style="background:${t.color}"></span>${t.icon} ${t.name}
+        <span class="vgh-count">${rs.length} 个目的地</span>
+        <span class="vgh-def">${t.def}</span>
+      </div>
+      ${rs.map(r=>visaRow(r,t)).join("")}
+    </div>`;
+  });
+  if(!html) html=`<div class="state"><div class="si">🗂️</div><h3>该类型暂无在营目的地</h3><p>政策库随线路目录扩充，更新后会出现在这里。</p></div>`;
+  document.getElementById("visaList").innerHTML=html;
+}
+function setVisaFilter(k){ visaFilter=k; renderVisaChips(); renderVisaList(); }
+function openVisa(){ visaFilter="all"; renderVisaChips(); renderVisaList(); go("visa"); }
+
+/* ===================== TABS / LINKAGE ===================== */
+function switchTab(name){
+  document.querySelectorAll(".tabs button").forEach(b=>b.classList.toggle("active",b.dataset.tab===name));
+  document.querySelectorAll(".tab-panel").forEach(p=>p.classList.toggle("active",p.id==="tab-"+name));
+}
+document.addEventListener("click",e=>{
+  const link=e.target.closest("[data-link]");
+  if(!link) return;
+  if(link.closest(".sheet-mask")) return; // don't hijack sheet clicks that have their own onclick? allow search label
+  const id=link.getAttribute("data-link");
+  const sec=document.getElementById(id);
+  if(!sec) return;
+  switchTab("detail");
+  setTimeout(()=>{
+    sec.scrollIntoView({behavior:"smooth",block:"start"});
+    sec.classList.add("linked","feature-flash");
+    setTimeout(()=>sec.classList.remove("linked","feature-flash"),1800);
+    // highlight corresponding prototype region
+    link.classList.add("hot-ring");
+    setTimeout(()=>link.classList.remove("hot-ring"),1800);
+  },80);
+});
+// requirement section -> highlight prototype element with same id linkage
+document.querySelectorAll(".feature-section").forEach(sec=>{
+  sec.addEventListener("click",()=>{
+    const id=sec.id;
+    const protoEl=document.querySelector(`[data-screen="${activeScreenName()}"] [data-link="${id}"], .screen:not([style*="none"]) [data-link="${id}"]`);
+    if(protoEl){protoEl.classList.add("hot-ring");setTimeout(()=>protoEl.classList.remove("hot-ring"),1600);}
+  });
+});
+function activeScreenName(){
+  const el=document.querySelector(".screen:not([style*='none'])");
+  return el?el.dataset.screen:"home";
+}
+
+/* ===================== MODES ===================== */
+function setMode(mode){
+  document.body.classList.toggle("textmode",mode==="text");
+  document.querySelector('.mode-switch button[data-mode="split"]').classList.toggle("active",mode==="split");
+  document.querySelector('.mode-switch button[data-mode="text"]').classList.toggle("active",mode==="text");
+  const rail=document.getElementById("protoRail");
+  if(mode==="text"){
+    // in text mode, embed the phone once under the first feature section
+    if(!document.getElementById("inlineProto")){
+      rail.id="protoRailHidden";
+      const wrap=document.createElement("div");
+      wrap.className="text-proto"; wrap.id="inlineProto";
+      wrap.innerHTML=`<div class="tp-label">📱 交互原型（可在「双栏评审」模式完整点击；此处为静态嵌入，对应 F-01 首页低价榜）</div>`;
+      const holder=document.createElement("div");
+      holder.style.display="flex";holder.style.justifyContent="center";
+      const phone=document.querySelector(".phone");
+      // keep a live visual by moving the rail phone into doc in text mode
+      rail.classList.add("show-inline");
+      wrap.appendChild(rail);
+      const anchor=document.getElementById("feature-board");
+      anchor.parentNode.insertBefore(wrap,anchor.nextSibling);
+    }
+    // order panels: overview, design, detail, rules already in DOM
+    window.scrollTo({top:0,behavior:"smooth"});
+  }else{
+    rail=document.getElementById("protoRailHidden")||document.getElementById("protoRail");
+    rail.id="protoRail"; rail.classList.remove("show-inline");
+    const inline=document.getElementById("inlineProto");
+    const workspace=document.querySelector(".workspace");
+    if(inline){ rail.remove(); workspace.insertBefore(rail, document.querySelector(".doc")); inline.remove(); }
+    window.scrollTo({top:0});
+  }
+}
+
+/* ===================== INIT ===================== */
+function clockTick(){
+  const d=new Date();
+  document.getElementById("sbClock").textContent=`${d.getHours()}:${String(d.getMinutes()).padStart(2,"0")}`;
+}
+switchBoard("dom");
+renderVisaEntry();
+renderHolidayChips();
+renderHoliday();
+renderChannels();
+leaveFilter=2;
+clockTick(); setInterval(clockTick,30000);
+</script>
+</body>
+</html>
